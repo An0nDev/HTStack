@@ -1,3 +1,7 @@
+#pragma once
+#include <vector>
+#include <string>
+
 namespace HTStack {
     class ServerConfiguration {
     public:
