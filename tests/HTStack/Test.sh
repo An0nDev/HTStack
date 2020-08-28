@@ -3,6 +3,7 @@ SRC_DIR=../../src
 clang++ \
     -fPIC -shared \
     $SRC_DIR/App/App.cpp \
+    $SRC_DIR/Request/Request.cpp \
     TestApp.cpp -o TestApp.so \
 
 clang++ \
@@ -18,4 +19,4 @@ clang++ \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
     TestServer.cpp -o TestServer \
-    && ./TestServer
+    && LD_LIBRARY_PATH=. ./TestServer
