@@ -6,8 +6,8 @@
 namespace HTStack {
     RequestReader::RequestReader (Server & server_)
     : server (server_) {};
-    Request RequestReader::readFrom (int const & sockfd) {
-        std::cout << "Reading from " << sockfd << std::endl;
+    Request RequestReader::readFrom (int const & clientSocket, sockaddr_in const & clientAddress) {
+        std::cout << "Reading from " << clientSocket << std::endl;
         return Request ();
     };
 };

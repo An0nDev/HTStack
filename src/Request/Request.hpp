@@ -1,5 +1,8 @@
 #pragma once
 
 namespace HTStack {
-  class Request {};
+    class Request {
+    public:
+        bool complete = false;
+    };
 };

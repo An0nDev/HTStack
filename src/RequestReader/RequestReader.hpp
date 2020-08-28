@@ -1,4 +1,5 @@
 #pragma once
+#include <netinet/ip.h>
 
 namespace HTStack {
     class Server;
@@ -7,6 +8,6 @@ namespace HTStack {
     public:
         Server & server;
         RequestReader (Server & server_);
-        Request readFrom (int const & sockfd);
+        Request readFrom (int const & clientSocket, sockaddr_in const & clientAddress);
     };
 };

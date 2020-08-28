@@ -3,6 +3,8 @@
 #include "../Server/Server.hpp"
 #include "../ServerConfiguration/ServerConfiguration.hpp"
 #include "AppContainer.hpp"
+#include "../Request/Request.hpp"
+#include "../App/App.hpp"
 
 namespace HTStack {
     AppLoader::AppLoader (Server & server_) : server (server_) {
@@ -17,6 +19,18 @@ namespace HTStack {
             appContainer->load (server);
             std::cout << "App at " << appContainer->location << " loaded" << std::endl;
         }
+    };
+    void AppLoader::handleRequest (Request & request) {
+        for (AppContainer* appContainer : apps) {
+            if (!appContainer->isLoaded) {
+                continue;
+            }
+            App* app = appContainer->app;
+            app->onRequest (request);
+            if (request.complete) {
+                return;
+            }
+        };
     };
     void AppLoader::unloadAll () {
         for (AppContainer* appContainer : apps) {

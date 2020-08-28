@@ -8,6 +8,7 @@ clang++ \
 clang++ \
     -ldl \
     -lpthread \
+    $SRC_DIR/SocketClientManager/SocketClientManager.cpp \
     $SRC_DIR/SocketManager/SocketManager.cpp \
     $SRC_DIR/Server/Server.cpp \
     $SRC_DIR/App/App.cpp \

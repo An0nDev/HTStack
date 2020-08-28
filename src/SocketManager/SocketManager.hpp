@@ -1,20 +1,35 @@
+#pragma once
+
 #include <thread>
+#include <sys/types.h>
+#include <netinet/ip.h>
+#include <system_error>
+#include <mutex>
+#include "../SocketClientManager/SocketClientManager.hpp"
 
 namespace HTStack {
     class Server;
-    class SocketManager;
-    void SocketManagerRun_ (SocketManager* socketManager);
     class SocketManager {
-        friend void SocketManagerRun_ (SocketManager* socketManager);
-    private:
-        std::thread* runThread;
-        void run_ ();
     public:
         Server & server;
         bool isRunning;
         SocketManager (Server & server_);
         void start ();
         void shutdown ();
-        ~SocketManager () throw (std::logic_error);
+        ~SocketManager ();
+    private:
+        std::thread* runThread;
+
+        sockaddr_in serverAddress;
+        int serverSocket;
+
+        void setup_ () throw (std::system_error);
+        void run_ () throw (std::system_error);
+        void cleanup_ () throw (std::system_error);
+
+        static void system_error_check__ (std::string const & systemFunctionName, int & systemFunctionReturnValue) throw (std::system_error);
+        friend SocketClientManager;
+
+        SocketClientManager clientManager;
     };
 };

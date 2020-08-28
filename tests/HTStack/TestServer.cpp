@@ -3,8 +3,9 @@
 #include "../../src/Server/Server.hpp"
 #include <string>
 #include <vector>
-#include <unistd.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 int main () {
     std::string appLocation ("TestApp.so");
@@ -12,10 +13,16 @@ int main () {
     appLocations.push_back (appLocation);
     HTStack::ServerConfiguration serverConfiguration (
         appLocations,
-        true // autoStart
+        true, // autoStart
+        8080, // port
+        1024 // backlog
     );
-    HTStack::Server server (serverConfiguration);
-    std::cout << "Waiting for signal..." << std::endl;
-    pause ();
-    std::cout << "Signal received." << std::endl;
+    {
+        HTStack::Server server (serverConfiguration);
+        server.start ();
+        std::cout << "Waiting for 5 seconds..." << std::endl;
+        std::this_thread::sleep_for (std::chrono::seconds (5));
+        std::cout << "Slept for 5 seconds, shutting down server." << std::endl;
+        server.shutdown ();
+    }
 };

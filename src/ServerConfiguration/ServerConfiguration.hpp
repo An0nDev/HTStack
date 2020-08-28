@@ -7,6 +7,13 @@ namespace HTStack {
     public:
         std::vector <std::string> appLocations;
         bool autoStart;
-        ServerConfiguration (std::vector <std::string> const & appLocations_, bool const & autoStart_);
+        int port;
+        int backlog;
+        ServerConfiguration (
+            std::vector <std::string> const & appLocations_,
+            bool const & autoStart_,
+            int const & port_,
+            int const & backlog_
+        );
     };
-}
+};
