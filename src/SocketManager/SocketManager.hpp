@@ -23,12 +23,9 @@ namespace HTStack {
         sockaddr_in serverAddress;
         int serverSocket;
 
-        void setup_ () throw (std::system_error);
-        void run_ () throw (std::system_error);
-        void cleanup_ () throw (std::system_error);
-
-        static void system_error_check__ (std::string const & systemFunctionName, int & systemFunctionReturnValue) throw (std::system_error);
-        friend SocketClientManager;
+        void setup_ ();
+        void run_ ();
+        void cleanup_ ();
 
         SocketClientManager clientManager;
     };

@@ -1,21 +1,28 @@
 #include "SocketClientManager.hpp"
 #include "../Server/Server.hpp"
+#include "../CInteropUtils/CInteropUtils.hpp"
 #include "../RequestReader/RequestReader.hpp"
 #include "../Request/Request.hpp"
 #include <unistd.h>
+#include <optional>
+#include <iostream>
 
 namespace HTStack {
     SocketClientManager::SocketClientManager (Server & server_)
     : server (server_) {};
     void SocketClientManager::clientFunc (int const & clientSocket, sockaddr_in const & clientAddress) {
-        Request request = server.requestReader.readFrom (clientSocket, clientAddress);
-        server.appLoader.handleRequest (request);
+        std::cout << "Calling requestReader" << std::endl;
+        std::optional <Request> request = server.requestReader.readFrom (clientSocket, clientAddress);
+        std::cout << "requestReader was called" << std::endl;
+        if (request.has_value ()) {
+            server.appLoader.handleRequest (request.value ());
+        }
 
         int shutdownReturnValue = shutdown (clientSocket, SHUT_RDWR);
-        SocketManager::system_error_check__ ("shutdown ()", shutdownReturnValue);
+        CInteropUtils::systemErrorCheck ("shutdown ()", shutdownReturnValue);
 
         int closeReturnValue = close (clientSocket);
-        SocketManager::system_error_check__ ("close ()", closeReturnValue);
+        CInteropUtils::systemErrorCheck ("close ()", closeReturnValue);
     };
 
     void SocketClientManager::create (int const & clientSocket, sockaddr_in const & clientAddress) {

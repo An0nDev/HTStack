@@ -15,6 +15,6 @@ namespace HTStack {
         void loadAll ();
         void handleRequest (Request & request);
         void unloadAll ();
-        ~AppLoader () throw (std::logic_error);
+        ~AppLoader () noexcept (false);
     };
 };

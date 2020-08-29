@@ -3,6 +3,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/socket.h>
+#include "../CInteropUtils/CInteropUtils.hpp"
 #include <errno.h>
 #include "../Server/Server.hpp"
 #include "../SocketClientManager/SocketClientManager.hpp"
@@ -12,11 +13,6 @@ namespace HTStack {
     : server (server_), clientManager (server) {
         serverAddress.sin_family = AF_INET;
         serverAddress.sin_addr.s_addr = INADDR_ANY;
-    };
-    void SocketManager::system_error_check__ (std::string const & systemFunctionName, int & systemFunctionReturnValue) throw (std::system_error) {
-        if (systemFunctionReturnValue < 0) {
-            throw std::system_error (std::error_code (errno, std::system_category ()), systemFunctionName);
-        }
     };
     void SocketManager::start () {
         setup_ ();
@@ -34,19 +30,19 @@ namespace HTStack {
         std::cout << "Done" << std::endl;
         // Socket deconstruction goes here
     };
-    void SocketManager::setup_ () throw (std::system_error) {
+    void SocketManager::setup_ () {
         serverSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        system_error_check__ ("socket ()", serverSocket);
+        CInteropUtils::systemErrorCheck ("socket ()", serverSocket);
 
         serverAddress.sin_port = htons (server.configuration.port);
         unsigned long serverAddressSize = sizeof (serverAddress);
         int clientSocket = bind (serverSocket, (sockaddr*) &serverAddress, serverAddressSize);
-        system_error_check__ ("bind ()", clientSocket);
+        CInteropUtils::systemErrorCheck ("bind ()", clientSocket);
 
         int listenReturnValue = listen (serverSocket, server.configuration.backlog);
-        system_error_check__ ("listen ()", listenReturnValue);
+        CInteropUtils::systemErrorCheck ("listen ()", listenReturnValue);
     };
-    void SocketManager::run_ () throw (std::system_error) {
+    void SocketManager::run_ () {
         while (true) {
             sockaddr_in clientAddress;
             unsigned long clientAddressSize = sizeof (clientAddress);
@@ -56,20 +52,20 @@ namespace HTStack {
                 // Broken from cleanup_
                 break;
             }
-            system_error_check__ ("accept ()", clientSocket);
+            CInteropUtils::systemErrorCheck ("accept ()", clientSocket);
 
             std::cout << "Got client socket! File descriptor: " << clientSocket << std::endl;
             clientManager.create (clientSocket, clientAddress);
         }
     };
-    void SocketManager::cleanup_() throw (std::system_error) {
+    void SocketManager::cleanup_() {
         int shutdownReturnValue = ::shutdown (serverSocket, SHUT_RD); // causes accept to fail with EINVAL; see https://stackoverflow.com/a/19239058/5037905
-        system_error_check__ ("shutdown ()", shutdownReturnValue);
+        CInteropUtils::systemErrorCheck ("shutdown ()", shutdownReturnValue);
 
         clientManager.waitForAll ();
 
         int closeReturnValue = close (serverSocket);
-        system_error_check__ ("close ()", closeReturnValue);
+        CInteropUtils::systemErrorCheck ("close ()", closeReturnValue);
     };
     SocketManager::~SocketManager () {
         if (isRunning) shutdown ();

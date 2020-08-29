@@ -17,6 +17,6 @@ namespace HTStack {
         AppContainer (std::string const & location_);
         void load (Server & server);
         void unload ();
-        ~AppContainer () throw (std::logic_error);
+        ~AppContainer () noexcept (false);
     };
 };

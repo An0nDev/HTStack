@@ -15,7 +15,8 @@ int main () {
         appLocations,
         true, // autoStart
         8080, // port
-        1024 // backlog
+        1024, // backlog
+        65535 // maxRecvSize
     );
     {
         HTStack::Server server (serverConfiguration);

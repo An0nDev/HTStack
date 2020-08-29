@@ -9,11 +9,13 @@ namespace HTStack {
         bool autoStart;
         int port;
         int backlog;
+        int maxRecvSize;
         ServerConfiguration (
             std::vector <std::string> const & appLocations_,
             bool const & autoStart_,
             int const & port_,
-            int const & backlog_
+            int const & backlog_,
+            int const & maxRecvSize_
         );
     };
 };
