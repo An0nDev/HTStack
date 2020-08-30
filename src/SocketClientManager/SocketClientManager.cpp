@@ -11,9 +11,7 @@ namespace HTStack {
     SocketClientManager::SocketClientManager (Server & server_)
     : server (server_) {};
     void SocketClientManager::clientFunc (int const & clientSocket, sockaddr_in const & clientAddress) {
-        std::cout << "Calling requestReader" << std::endl;
         std::optional <Request> request = server.requestReader.readFrom (clientSocket, clientAddress);
-        std::cout << "requestReader was called" << std::endl;
         if (request.has_value ()) {
             server.appLoader.handleRequest (request.value ());
         }

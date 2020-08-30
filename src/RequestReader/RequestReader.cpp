@@ -2,58 +2,77 @@
 #include <iostream>
 #include "../Server/Server.hpp"
 #include "../ServerConfiguration/ServerConfiguration.hpp"
-#include "../Request/Request.hpp"
 #include "../CInteropUtils/CInteropUtils.hpp"
-#include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include "InternalReader.hpp"
 
 namespace HTStack {
     const std::string RequestReader::CRLF ("\r\n");
-    std::optional <std::vector <char>> RequestReader::recv_ (int const & clientSocket) {
-        char recvBuffer [server.configuration.maxRecvSize];
-        ssize_t recvReturnValue = recv (clientSocket, &recvBuffer, server.configuration.maxRecvSize, 0); // no flags
-        if (recvReturnValue == -1 && errno == EINVAL) {
-            return std::nullopt; // Failure (socket closed)
-        }
-        CInteropUtils::systemErrorCheck ("recv ()", recvReturnValue);
-        std::vector <char> dataBytes (recvBuffer, recvBuffer + recvReturnValue);
-        return std::optional <std::vector <char>> {dataBytes}; // Success
-    };
-    std::optional <std::string> RequestReader::recvUntil_ (int const & clientSocket, std::string endPattern) {
-        std::string completeString = leftoverFromLastRecvUntil; // copy leftover data from last call
-        size_t patternPosition;
-        while (true) {
-            patternPosition = completeString.find (endPattern);
-            if (patternPosition != std::string::npos) {
-                break; // Match found
+    const std::string RequestReader::headerNameAndValueSeparator (": ");
+    std::vector <Request::Header> RequestReader::parseHeaderString (std::string headerString) {
+        std::vector <Request::Header> headers;
+        size_t crlfLocation = 0;
+        while ((crlfLocation = headerString.find (CRLF, crlfLocation)) != std::string::npos) {
+            std::string headerLine = headerString.substr (0, crlfLocation);
+            std::cout << "Header line: '" << headerLine << "'" << std::endl;
+            size_t colonSpaceLocation = headerString.find (headerNameAndValueSeparator);
+            if (colonSpaceLocation == std::string::npos) {
+                continue;
             }
-            std::optional <std::vector <char>> recvResult = recv_ (clientSocket);
-            if (!recvResult.has_value ()) {
-                return std::nullopt; // Failure (socket closed)
-            }
-            std::string recvString (recvResult.value ().data (), recvResult.value ().size ()); // as in "string that was recv"
-            completeString.append (recvString);
-        }
-        size_t patternEndPosition = patternPosition + endPattern.size ();
-        leftoverFromLastRecvUntil.clear (); // Empty the member for leftover data
-        if (patternEndPosition > (completeString.size () - 1)) {
-            // We have leftover data, append to the member
-            leftoverFromLastRecvUntil.append (completeString.substr (patternEndPosition, std::string::npos));
-        }
-        return std::optional <std::string> {completeString.substr (0, patternPosition)}; // return the complete string without the end pattern
+            std::string headerName (headerLine.substr (0, colonSpaceLocation));
+            std::string headerValue (headerLine.substr (colonSpaceLocation + headerNameAndValueSeparator.size (), headerLine.size () - (colonSpaceLocation + headerNameAndValueSeparator.size ())));
+            Request::Header header (headerName, headerValue);
+            headers.push_back (header);
+            headerString = headerString.substr (crlfLocation + CRLF.size (), headerString.size () - (crlfLocation + CRLF.size ()));
+        };
+        return headers;
     };
     RequestReader::RequestReader (Server & server_)
     : server (server_) {};
     std::optional <Request> RequestReader::readFrom (int const & clientSocket, sockaddr_in const & clientAddress) {
         std::cout << "Reading from " << clientSocket << std::endl;
-        std::optional <std::string> requestLineOptional = recvUntil_ (clientSocket, CRLF);
+
+        InternalReader reader (server, clientSocket);
+
+        std::optional <std::string> requestLineOptional = reader.recvTextUntil (CRLF);
         if (!requestLineOptional.has_value ()) {
             return std::nullopt;
         }
         std::string requestLine = requestLineOptional.value ();
         std::cout << "Request line: " << requestLine << std::endl;
+
+        std::vector <Request::Header> headers;
+        while (true) {
+            std::optional <std::string> headerLineOptional = reader.recvTextUntil (CRLF);
+            if (!headerLineOptional.has_value ()) {
+                return std::nullopt;
+            }
+            std::string headerLine = headerLineOptional.value ();
+            if (headerLine.empty ()) {
+                break;
+            }
+            size_t nameAndValueSeparatorLocation = headerLine.find (headerNameAndValueSeparator);
+            if (nameAndValueSeparatorLocation == std::string::npos) {
+                continue;
+            }
+            std::string headerName (
+                headerLine.substr (0, nameAndValueSeparatorLocation)
+            );
+            std::string headerValue (
+                headerLine.substr (
+                    nameAndValueSeparatorLocation + headerNameAndValueSeparator.size (),
+                    headerLine.size () - (
+                        nameAndValueSeparatorLocation + headerNameAndValueSeparator.size ()
+                    )
+                )
+            );
+            Request::Header header (headerName, headerValue);
+            headers.push_back (header);
+        }
+        std::cout << "Header count: " << headers.size () << std::endl;
+        for (Request::Header header : headers) {
+            std::cout << "Header " << header.name << " has value '" << header.value << "'" << std::endl;
+        }
+
         return std::optional <Request> {Request ()};
     };
 };

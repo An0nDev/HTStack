@@ -10,12 +10,14 @@ namespace HTStack {
         int port;
         int backlog;
         int maxRecvSize;
+        bool sloppySocketRestart;
         ServerConfiguration (
             std::vector <std::string> const & appLocations_,
             bool const & autoStart_,
             int const & port_,
             int const & backlog_,
-            int const & maxRecvSize_
+            int const & maxRecvSize_,
+            bool const & sloppySocketRestart_
         );
     };
 };

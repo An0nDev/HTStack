@@ -16,7 +16,8 @@ int main () {
         true, // autoStart
         8080, // port
         1024, // backlog
-        65535 // maxRecvSize
+        65535, // maxRecvSize
+        true // sloppySocketRestart
     );
     {
         HTStack::Server server (serverConfiguration);

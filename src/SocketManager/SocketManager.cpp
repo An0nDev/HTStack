@@ -34,6 +34,12 @@ namespace HTStack {
         serverSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
         CInteropUtils::systemErrorCheck ("socket ()", serverSocket);
 
+        if (server.configuration.sloppySocketRestart) {
+            int reuseAddrValue = 1; // non-zero value for enable since it's a boolean
+            int setsockoptReturnValue = setsockopt (serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuseAddrValue, sizeof (reuseAddrValue));
+            CInteropUtils::systemErrorCheck ("setsockopt ()", setsockoptReturnValue);
+        }
+
         serverAddress.sin_port = htons (server.configuration.port);
         unsigned long serverAddressSize = sizeof (serverAddress);
         int clientSocket = bind (serverSocket, (sockaddr*) &serverAddress, serverAddressSize);

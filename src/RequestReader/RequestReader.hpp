@@ -3,16 +3,15 @@
 #include <netinet/ip.h>
 #include <vector>
 #include <optional>
+#include "../Request/Request.hpp"
 
 namespace HTStack {
     class Server;
-    class Request;
     class RequestReader {
     private:
         static const std::string CRLF;
-        std::optional <std::vector <char>> recv_ (int const & clientSocket);
-        std::string leftoverFromLastRecvUntil;
-        std::optional <std::string> recvUntil_ (int const & clientSocket, std::string endPattern);
+        static const std::string headerNameAndValueSeparator;
+        std::vector <Request::Header> parseHeaderString (std::string headerString);
     public:
         Server & server;
         RequestReader (Server & server_);

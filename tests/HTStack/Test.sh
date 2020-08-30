@@ -19,6 +19,7 @@ clang++ \
     $SRC_DIR/App/App.cpp \
     $SRC_DIR/AppLoader/AppContainer.cpp \
     $SRC_DIR/AppLoader/AppLoader.cpp \
+    $SRC_DIR/RequestReader/InternalReader.cpp \
     $SRC_DIR/RequestReader/RequestReader.cpp \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
