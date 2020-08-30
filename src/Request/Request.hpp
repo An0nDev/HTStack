@@ -1,18 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <map>
 
 namespace HTStack {
     class Request {
     public:
-        class Header {
-        public:
-            std::string name;
-            std::string value;
-            Header (std::string const & name_, std::string const & value_);
-        };
-        std::vector <Header> headers;
+        std::map <std::string, std::string> headers;
         bool complete = false;
     };
 };
