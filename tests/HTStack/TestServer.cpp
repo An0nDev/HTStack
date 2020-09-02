@@ -19,12 +19,14 @@ int main () {
         65535, // maxRecvSize
         true // sloppySocketRestart
     );
+    std::cout << "[TS] Starting up server..." << std::endl;
     {
         HTStack::Server server (serverConfiguration);
         server.start ();
-        std::cout << "Waiting for 5 seconds..." << std::endl;
+        std::cout << "[TS] Server started up, waiting for 5 seconds..." << std::endl;
         std::this_thread::sleep_for (std::chrono::seconds (5));
-        std::cout << "Slept for 5 seconds, shutting down server." << std::endl;
+        std::cout << "[TS] Slept for 5 seconds, shutting down server..." << std::endl;
         server.shutdown ();
-    }
+    } // Makes sure ~HTStack::Server () is called before shutdown completion message is shown
+    std::cout << "[TS] Server shut down." << std::endl;
 };

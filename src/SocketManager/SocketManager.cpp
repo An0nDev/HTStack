@@ -1,6 +1,5 @@
 #include "SocketManager.hpp"
 #include <stdexcept>
-#include <iostream>
 #include <unistd.h>
 #include <sys/socket.h>
 #include "../CInteropUtils/CInteropUtils.hpp"
@@ -17,18 +16,13 @@ namespace HTStack {
     void SocketManager::start () {
         setup_ ();
         runThread = new std::thread (&SocketManager::run_, this);
-        // Socket initialization goes here
         isRunning = true;
     };
     void SocketManager::shutdown () {
-        std::cout << "Calling cleanup_" << std::endl;
         cleanup_ ();
         isRunning = false;
-        std::cout << "Joining run thread" << std::endl;
         runThread->join ();
         delete runThread;
-        std::cout << "Done" << std::endl;
-        // Socket deconstruction goes here
     };
     void SocketManager::setup_ () {
         serverSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -60,7 +54,6 @@ namespace HTStack {
             }
             CInteropUtils::systemErrorCheck ("accept ()", clientSocket);
 
-            std::cout << "Got client socket! File descriptor: " << clientSocket << std::endl;
             clientManager.create (clientSocket, clientAddress);
         }
     };

@@ -3,7 +3,7 @@
 
 namespace HTStack {
     void Response::sendTo (int const & clientSocket) {
-        std::cout << "Sending Response to " << clientSocket << std::endl;
+        std::cout << "TODO: send response to " << clientSocket << std::endl;
     };
     Response::Response (int const & responseCode_)
     : responseCode (responseCode_) {};

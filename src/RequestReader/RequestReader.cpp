@@ -15,8 +15,6 @@ namespace HTStack {
     RequestReader::RequestReader (Server & server_)
     : server (server_) {};
     std::optional <Request> RequestReader::readFrom (int const & clientSocket, sockaddr_in const & clientAddress) {
-        std::cout << "Reading from " << clientSocket << std::endl;
-
         InternalReader reader (server, clientSocket);
 
         std::optional <std::string> requestLineOptional = reader.recvTextUntil (CRLF);

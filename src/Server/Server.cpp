@@ -9,22 +9,18 @@ namespace HTStack {
     void Server::start () {
         if (isRunning) return;
         ensureAsyncShutdownCompleted ();
-        std::cout << "Server starting up" << std::endl;
         if (configuration.autoStart) {
             appLoader.loadAll ();
         }
         socketManager.start ();
-        std::cout << "Server started up" << std::endl;
         isRunning = true;
     };
     void Server::shutdown () {
         if (!isRunning) return;
         ensureAsyncShutdownCompleted ();
         isRunning = false;
-        std::cout << "Server shutting down" << std::endl;
         socketManager.shutdown ();
         appLoader.unloadAll ();
-        std::cout << "Server shut down" << std::endl;
     };
     void Server::shutdownAsync () {
         ensureAsyncShutdownCompleted ();

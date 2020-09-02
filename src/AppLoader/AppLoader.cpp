@@ -1,4 +1,3 @@
-#include <iostream>
 #include "AppLoader.hpp"
 #include "../Server/Server.hpp"
 #include "../ServerConfiguration/ServerConfiguration.hpp"
@@ -15,9 +14,7 @@ namespace HTStack {
     };
     void AppLoader::loadAll () {
         for (AppContainer* appContainer : apps) {
-            std::cout << "Loading app at " << appContainer->location << std::endl;
             appContainer->load (server);
-            std::cout << "App at " << appContainer->location << " loaded" << std::endl;
         }
     };
     void AppLoader::handleRequest (Request & request) {
@@ -34,9 +31,7 @@ namespace HTStack {
     };
     void AppLoader::unloadAll () {
         for (AppContainer* appContainer : apps) {
-            std::cout << "Unloading app at " << appContainer->location << std::endl;
             appContainer->unload ();
-            std::cout << "App at " << appContainer->location << " unloaded" << std::endl;
         };
     };
     AppLoader::~AppLoader () noexcept (false) {
