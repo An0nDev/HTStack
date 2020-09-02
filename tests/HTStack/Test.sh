@@ -6,6 +6,7 @@ clang++ \
     -fPIC -shared \
     $SRC_DIR/App/App.cpp \
     $SRC_DIR/Request/Request.cpp \
+    $SRC_DIR/Response/Response.cpp \
     TestApp.cpp -o TestApp.so \
 
 clang++ \
@@ -21,6 +22,7 @@ clang++ \
     $SRC_DIR/AppLoader/AppLoader.cpp \
     $SRC_DIR/RequestReader/InternalReader.cpp \
     $SRC_DIR/RequestReader/RequestReader.cpp \
+    $SRC_DIR/Response/Response.cpp \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
     TestServer.cpp -o TestServer \

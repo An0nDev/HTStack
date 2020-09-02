@@ -11,6 +11,8 @@ namespace HTStack {
     private:
         static const std::string CRLF;
         static const std::string headerNameAndValueSeparator;
+        static const std::string methodAndPathSeparator;
+        static const std::string pathAndVersionSeparator;
     public:
         Server & server;
         RequestReader (Server & server_);
