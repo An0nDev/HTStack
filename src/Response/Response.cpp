@@ -10,6 +10,7 @@ namespace HTStack {
     const std::string Response::versionString ("HTTP/1.1");
     const std::string Response::versionAndStatusSeparator (" ");
     const std::string Response::statusCodeAndTextSeparator (" ");
+    const std::string Response::headerNameAndValueSeparator (": ");
     const std::map <int, std::string> Response::statuses {
         // Information responses
         {100, "Continue"},
@@ -96,18 +97,28 @@ namespace HTStack {
         startLine.append (statuses.at (statusCode));
         startLine.append (CRLF);
         writeText_ (clientSocket, startLine);
+        headers.try_emplace ("Content-Length", std::to_string (data.size ()));
+        for (std::pair <std::string, std::string> header : headers) {
+            std::string headerString (header.first + headerNameAndValueSeparator + header.second + CRLF);
+            writeText_ (clientSocket, headerString);
+        }
         writeText_ (clientSocket, CRLF);
+        writeData_ (clientSocket, data);
     };
     void Response::writeText_ (int const & clientSocket, std::string const & text) {
         std::vector <char> textVector (text.begin (), text.end ());
-        char* textPointer (reinterpret_cast <char*> (textVector.data ()));
-        ssize_t sendReturnValue = send (clientSocket, static_cast <void*> (textPointer), textVector.size (), 0);
-        CInteropUtils::systemErrorCheck ("send ()", sendReturnValue);
+        writeData_ (clientSocket, textVector);
     };
+    void Response::writeData_ (int const & clientSocket, std::vector <char> const & data) {
+        const char* dataPointer (reinterpret_cast <const char*> (data.data ()));
+        ssize_t sendReturnValue = send (clientSocket, static_cast <const void*> (dataPointer), data.size (), 0);
+    }
     Response::Response (int const & statusCode_)
     : statusCode (statusCode_) {};
     Response::Response (int const & statusCode_, std::map <std::string, std::string> const & headers_)
     : statusCode (statusCode_), headers (headers_) {};
+    Response::Response (int const & statusCode_, std::string const & text)
+    : statusCode (statusCode_), data (text.begin (), text.end ()) {}
     Response::Response (int const & statusCode_, std::vector <char> const & data_)
     : statusCode (statusCode_), data (data_) {};
     void Response::respondTo (Request const & request) {

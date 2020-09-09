@@ -23,8 +23,7 @@ void TestApp::onRequest (HTStack::Request & request) {
     }
 
     std::string responseString ("Hello from TestApp!");
-    std::vector <char> responseData (responseString.begin (), responseString.end ());
-    HTStack::Response response (204, responseData);
+    HTStack::Response response (200, responseString); // 200 = OK
     response.respondTo (request);
 
     std::cout << "[TA] onRequest call completed" << std::endl;
