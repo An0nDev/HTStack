@@ -16,8 +16,7 @@ int main () {
         true, // autoStart
         8080, // port
         1024, // backlog
-        // std::thread::hardware_concurrency (), // clientThreadPoolSize
-        1, // clientThreadPoolSize (TEST VALUE)
+        std::thread::hardware_concurrency (), // clientThreadPoolSize
         65535, // maxRecvSize
         true // sloppySocketRestart
     );
