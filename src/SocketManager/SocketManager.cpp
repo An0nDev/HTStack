@@ -6,6 +6,7 @@
 #include <errno.h>
 #include "../Server/Server.hpp"
 #include "../SocketClientManager/SocketClientManager.hpp"
+#include <iostream>
 
 namespace HTStack {
     SocketManager::SocketManager (Server & server_)

@@ -4,19 +4,40 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 namespace HTStack {
     class Server;
     class SocketClientManager;
     class SocketClientManager {
     private:
-        std::vector <std::thread*> clientThreadList;
-        // Forces calls to create or waitForAll to wait for any other calls to create or waitForAll to complete first
-        // (create is called from SocketManager::runThread and waitForAll is called when SocketManager::shutdown is called)
-        // This guarantees thread safety for the clientThreadList object
-        std::mutex clientThreadListLock;
+        class ThreadPoolTask {
+        public:
+            int clientSocket;
+            sockaddr_in clientAddress;
+            ThreadPoolTask (int const & clientSocket_, sockaddr_in const & clientAddress_);
+        };
+        class ThreadPoolTaskHolder {
+        public:
+            ThreadPoolTask* task;
+            bool isHolding;
+            void hold (ThreadPoolTask task_);
+            void drop ();
+            ThreadPoolTaskHolder ();
+            ~ThreadPoolTaskHolder ();
+        };
+        std::vector <std::thread*> clientThreadPool;
+        int availableCount;
+        std::mutex availableLock;
+        std::condition_variable availableNotifier;
+        ThreadPoolTask* newTask;
+        std::condition_variable newTaskNotifier;
+        std::mutex clientThreadLock;
+        bool stopped;
 
-        void clientFunc (int const & clientSocket, sockaddr_in const & clientAddress);
+        void closeConnection_ (int const & clientSocket);
+
+        void clientThreadFunc ();
     public:
         SocketClientManager (Server & server_);
 

@@ -9,6 +9,7 @@ namespace HTStack {
         bool autoStart;
         int port;
         int backlog;
+        int clientThreadPoolSize;
         int maxRecvSize;
         bool sloppySocketRestart;
         ServerConfiguration (
@@ -16,6 +17,7 @@ namespace HTStack {
             bool const & autoStart_,
             int const & port_,
             int const & backlog_,
+            int const & clientThreadPoolSize_,
             int const & maxRecvSize_,
             bool const & sloppySocketRestart_
         );
