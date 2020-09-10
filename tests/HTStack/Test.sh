@@ -8,7 +8,7 @@ clang++ \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/Response/Response.cpp \
     $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
-    TestApp.cpp -o TestApp.so \
+    TestApp.cpp -o TestApp.so
 
 clang++ \
     -std=c++17 \
