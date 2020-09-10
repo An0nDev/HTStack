@@ -1,4 +1,6 @@
 # HTStack
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b8b1ba8a548d4c8191a2e9c88ff7356c)](https://www.codacy.com/manual/An0nDev/HTStack?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=An0nDev/HTStack&amp;utm_campaign=Badge_Grade)
+
 A C++ library for low-level HTTP stack construction
 
 ## What it does
