@@ -15,7 +15,7 @@ namespace HTStack {
         static const std::string pathAndVersionSeparator;
     public:
         Server & server;
-        RequestReader (Server & server_);
+        explicit RequestReader (Server & server_);
         std::optional <Request> readFrom (int const & clientSocket, sockaddr_in const & clientAddress);
     };
 };

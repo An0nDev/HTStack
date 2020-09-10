@@ -13,7 +13,7 @@ namespace HTStack {
     public:
         Server & server;
         bool isRunning;
-        SocketManager (Server & server_);
+        explicit SocketManager (Server & server_);
         void start ();
         void shutdown ();
         ~SocketManager ();

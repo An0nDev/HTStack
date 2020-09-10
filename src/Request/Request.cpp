@@ -6,21 +6,13 @@ namespace HTStack {
         Request::Method method = Request::Method::NONE;
         Request::Method & m = method;
 
-        if (ms == "GET")     m = Request::Method::GET;
-        if (ms == "HEAD")    m = Request::Method::HEAD;
-        if (ms == "POST")    m = Request::Method::POST;
-        if (ms == "PUT")     m = Request::Method::PUT;
-        if (ms == "DELETE")  m = Request::Method::DELETE;
-        if (ms == "CONNECT") m = Request::Method::CONNECT;
-        if (ms == "OPTIONS") m = Request::Method::OPTIONS;
-        if (ms == "TRACE")   m = Request::Method::TRACE;
-        if (ms == "PATCH")   m = Request::Method::PATCH;
+        #define check(NAME) if (ms == #NAME) { method = Request::Method::NAME; }
 
-        if (method == Request::Method::NONE) {
-            return std::nullopt;
-        } else {
-            return std::optional <Request::Method> {method};
-        }
+        check(GET)     else check(HEAD)   else check(POST) else
+        check(PUT)     else check(DELETE) else check(CONNECT) else
+        check(OPTIONS) else check(TRACE)  else check(PATCH)
+        else {return std::nullopt;}
+        return std::optional <Request::Method> {method};
     };
     Request::Request (
         int const & clientSocket_,

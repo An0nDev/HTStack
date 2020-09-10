@@ -13,6 +13,6 @@ namespace HTStack {
         InternalReader (Server const & server_, int const & clientSocket_);
         std::optional <std::vector <char>> recvData (int const & length);
         std::optional <std::string> recvTextUntil (std::string const & endPattern);
-        ~InternalReader () noexcept (false);
+        void ensureEmpty ();
     };
 };

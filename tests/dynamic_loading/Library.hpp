@@ -7,7 +7,7 @@ typedef LoadableClass* (*LoadableClassFactory) ();
 class Library {
     LibraryHandle handle;
 public:
-    Library (std::string const & path);
+    explicit Library (std::string const & path);
     LoadableClass* instantiate ();
     ~Library ();
 };

@@ -28,9 +28,9 @@ namespace HTStack {
         delete app;
         dlclose (handle);
     };
-    AppContainer::~AppContainer () noexcept (false) {
+    AppContainer::~AppContainer () {
         if (isLoaded) {
-            throw std::logic_error ("~AppContainer () called with isLoaded set; unload () should be unloaded before AppContainer destructs!");
+            unload ();
         };
     };
 };

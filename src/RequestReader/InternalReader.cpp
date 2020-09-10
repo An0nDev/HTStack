@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdexcept>
+#include <iostream>
 
 namespace HTStack {
     InternalReader::InternalReader (Server const & server_, int const & clientSocket_)
@@ -50,9 +51,9 @@ namespace HTStack {
         }
         return std::optional <std::string> {completeString.substr (0, patternPosition)}; // return the complete string without the end pattern
     };
-    InternalReader::~InternalReader () noexcept (false) {
+    void InternalReader::ensureEmpty () {
         if (leftoverFromLastCall.size () > 0) {
-            throw std::runtime_error ("Leftover data in leftoverFromLastCall!");
+            throw std::logic_error ("Leftover data in leftoverFromLastCall!");
         }
-    };
+    }
 };

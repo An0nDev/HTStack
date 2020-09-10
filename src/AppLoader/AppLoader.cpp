@@ -34,10 +34,10 @@ namespace HTStack {
             appContainer->unload ();
         };
     };
-    AppLoader::~AppLoader () noexcept (false) {
+    AppLoader::~AppLoader () {
         for (AppContainer* appContainer : apps) {
             if (appContainer->isLoaded) {
-                throw std::logic_error ("AppContainer* isLoaded is set when ~AppLoader () destructor was called! Did Server forget to call unloadAll ()?");
+                appContainer->unload ();
             }
             delete appContainer;
         }

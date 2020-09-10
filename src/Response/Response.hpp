@@ -19,10 +19,10 @@ namespace HTStack {
         int statusCode;
         std::map <std::string, std::string> headers;
         std::vector <char> data;
-        Response (int const & statusCode_);
-        Response (int const & statusCode_, std::map <std::string, std::string> const & headers_);
-        Response (int const & statusCode_, std::string const & text);
-        Response (int const & statusCode_, std::vector <char> const & data_);
+        explicit Response (int const & statusCode_);
+        explicit Response (int const & statusCode_, std::map <std::string, std::string> const & headers_);
+        explicit Response (int const & statusCode_, std::string const & text);
+        explicit Response (int const & statusCode_, std::vector <char> const & data_);
         void respondTo (Request const & request);
     };
 };

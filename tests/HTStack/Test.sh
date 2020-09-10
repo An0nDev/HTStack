@@ -1,3 +1,4 @@
+#!/bin/bash
 SRC_DIR=../../src
 LD_LIBRARY_PATH=/usr/local/
 

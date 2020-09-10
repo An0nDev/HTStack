@@ -11,10 +11,10 @@ namespace HTStack {
         Server & server;
         std::vector <AppContainer*> apps;
     public:
-        AppLoader (Server & server_);
+        explicit AppLoader (Server & server_);
         void loadAll ();
         void handleRequest (Request & request);
         void unloadAll ();
-        ~AppLoader () noexcept (false);
+        ~AppLoader ();
     };
 };
