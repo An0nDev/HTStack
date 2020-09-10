@@ -18,7 +18,7 @@ namespace HTStack {
         AppLoader appLoader;
         RequestReader requestReader;
         SocketManager socketManager;
-        Server (ServerConfiguration const & configuration_);
+        explicit Server (ServerConfiguration const & configuration_);
         void start ();
         void shutdown ();
 

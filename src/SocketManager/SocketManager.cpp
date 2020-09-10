@@ -10,7 +10,7 @@
 
 namespace HTStack {
     SocketManager::SocketManager (Server & server_)
-    : server (server_), clientManager (server), isRunning (false) {
+    : server (server_), clientManager (server) {
         serverAddress.sin_family = AF_INET;
         serverAddress.sin_addr.s_addr = INADDR_ANY;
     };

@@ -12,7 +12,7 @@ namespace HTStack {
     class SocketManager {
     public:
         Server & server;
-        bool isRunning;
+        bool isRunning = false;
         explicit SocketManager (Server & server_);
         void start ();
         void shutdown ();

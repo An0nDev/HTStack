@@ -19,7 +19,7 @@ namespace HTStack {
         };
         class ThreadPoolTaskHolder {
         public:
-            ThreadPoolTask* task;
+            ThreadPoolTask* task = nullptr;
             bool isHolding;
             void hold (ThreadPoolTask task_);
             void drop ();
@@ -39,7 +39,7 @@ namespace HTStack {
 
         void clientThreadFunc ();
     public:
-        SocketClientManager (Server & server_);
+        explicit SocketClientManager (Server & server_);
 
         Server & server;
 

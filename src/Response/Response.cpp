@@ -112,6 +112,7 @@ namespace HTStack {
     void Response::writeData_ (int const & clientSocket, std::vector <char> const & data) {
         const char* dataPointer (reinterpret_cast <const char*> (data.data ()));
         ssize_t sendReturnValue = send (clientSocket, static_cast <const void*> (dataPointer), data.size (), 0);
+        CInteropUtils::systemErrorCheck ("send ()", sendReturnValue);
     }
     Response::Response (int const & statusCode_)
     : statusCode (statusCode_) {};
