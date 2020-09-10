@@ -19,7 +19,7 @@ namespace HTStack {
         };
         class ThreadPoolTaskHolder {
         public:
-            ThreadPoolTask* task = nullptr;
+            ThreadPoolTask* task;
             bool isHolding;
             void hold (ThreadPoolTask task_);
             void drop ();

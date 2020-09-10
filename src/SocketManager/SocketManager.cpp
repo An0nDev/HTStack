@@ -13,6 +13,7 @@ namespace HTStack {
     : server (server_), clientManager (server) {
         serverAddress.sin_family = AF_INET;
         serverAddress.sin_addr.s_addr = INADDR_ANY;
+        isRunning = false;
     };
     void SocketManager::start () {
         setup_ ();

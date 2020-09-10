@@ -12,6 +12,7 @@ namespace HTStack {
     SocketClientManager::ThreadPoolTask::ThreadPoolTask (int const & clientSocket_, sockaddr_in const & clientAddress_)
     : clientSocket (clientSocket_), clientAddress (clientAddress_) {};
     SocketClientManager::ThreadPoolTaskHolder::ThreadPoolTaskHolder () {
+        task = nullptr;
         isHolding = false;
     }
     void SocketClientManager::ThreadPoolTaskHolder::hold (ThreadPoolTask task_) {
