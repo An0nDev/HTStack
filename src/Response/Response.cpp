@@ -86,6 +86,9 @@ namespace HTStack {
         {511, "Network Authentication Required"}
     };
     void Response::sendTo (int const & clientSocket) {
+        if (streamed) {
+            throw std::logic_error ("Streamed responses aren't implemented yet!");
+        }
         if (statuses.count (statusCode) == 0) {
             throw std::logic_error ("Invalid response status code " + std::to_string (statusCode));
         }
@@ -115,13 +118,15 @@ namespace HTStack {
         CInteropUtils::systemErrorCheck ("send ()", sendReturnValue);
     }
     Response::Response (int const & statusCode_)
-    : statusCode (statusCode_) {};
+    : statusCode (statusCode_), streamed (false), inputStream (nullptr) {};
     Response::Response (int const & statusCode_, std::map <std::string, std::string> const & headers_)
-    : statusCode (statusCode_), headers (headers_) {};
+    : statusCode (statusCode_), headers (headers_), streamed (false), inputStream (nullptr) {};
     Response::Response (int const & statusCode_, std::string const & text)
-    : statusCode (statusCode_), data (text.begin (), text.end ()) {}
+    : statusCode (statusCode_), data (text.begin (), text.end ()), streamed (false), inputStream (nullptr) {}
     Response::Response (int const & statusCode_, std::vector <char> const & data_)
-    : statusCode (statusCode_), data (data_) {};
+    : statusCode (statusCode_), data (data_), streamed (false), inputStream (nullptr) {};
+    Response::Response (int const & statusCode_, std::istream* inputStream_)
+    : statusCode (statusCode_), streamed (true), inputStream (inputStream_) {};
     void Response::respondTo (Request const & request) {
         sendTo (request.clientSocket);
     };
