@@ -1,7 +1,8 @@
 #include "Response.hpp"
+#include "../CInteropUtils/CInteropUtils.hpp"
+#include "../Server/Server.hpp"
 #include <iostream>
 #include <stdexcept>
-#include "../CInteropUtils/CInteropUtils.hpp"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -85,10 +86,7 @@ namespace HTStack {
         {510, "Not Extended"},
         {511, "Network Authentication Required"}
     };
-    void Response::sendTo (int const & clientSocket) {
-        if (streamed) {
-            throw std::logic_error ("Streamed responses aren't implemented yet!");
-        }
+    void Response::sendTo (int const & clientSocket, int const & streamedResponseBufferSize) {
         if (statuses.count (statusCode) == 0) {
             throw std::logic_error ("Invalid response status code " + std::to_string (statusCode));
         }
@@ -100,13 +98,36 @@ namespace HTStack {
         startLine.append (statuses.at (statusCode));
         startLine.append (CRLF);
         writeText_ (clientSocket, startLine);
-        headers.try_emplace ("Content-Length", std::to_string (data.size ()));
+        int contentLength;
+        if (streamed) {
+            inputStream->seekg (0, std::istream::end);
+            contentLength = inputStream->tellg ();
+            inputStream->seekg (0, std::istream::beg);
+        } else {
+            contentLength = data.size ();
+        }
+        headers.try_emplace ("Content-Length", std::to_string (contentLength));
         for (std::pair <std::string, std::string> header : headers) {
             std::string headerString (header.first + headerNameAndValueSeparator + header.second + CRLF);
             writeText_ (clientSocket, headerString);
         }
         writeText_ (clientSocket, CRLF);
-        writeData_ (clientSocket, data);
+        if (streamed) {
+            char* inputStreamBuffer = new char [streamedResponseBufferSize];
+            while (!inputStream->eof ()) {
+                inputStream->read (inputStreamBuffer, streamedResponseBufferSize);
+                int readBytesCount;
+                if (inputStream->eof ()) {
+                    readBytesCount = inputStream->gcount ();
+                } else {
+                    readBytesCount = streamedResponseBufferSize;
+                }
+                writeData_ (clientSocket, std::vector <char> {inputStreamBuffer, inputStreamBuffer + readBytesCount});
+            }
+            delete [] inputStreamBuffer;
+        } else {
+            writeData_ (clientSocket, data);
+        }
     };
     void Response::writeText_ (int const & clientSocket, std::string const & text) {
         std::vector <char> textVector (text.begin (), text.end ());
@@ -128,6 +149,6 @@ namespace HTStack {
     Response::Response (int const & statusCode_, std::istream* inputStream_)
     : statusCode (statusCode_), streamed (true), inputStream (inputStream_) {};
     void Response::respondTo (Request const & request) {
-        sendTo (request.clientSocket);
+        sendTo (request.clientSocket, request.server.configuration.streamedResponseBufferSize);
     };
 };

@@ -4,8 +4,10 @@
 #include <optional>
 
 namespace HTStack {
+    class Server;
     class Request {
     public:
+        Server const & server;
         int clientSocket;
         enum Method {
             NONE    = -1, // do not use! may break things
@@ -19,6 +21,7 @@ namespace HTStack {
         std::map <std::string, std::string> headers;
         bool complete = false;
         Request (
+            Server const & server_,
             int const & clientSocket_,
             Method const & method_,
             std::string const & path_,

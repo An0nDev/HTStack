@@ -10,9 +10,10 @@ namespace HTStack {
         else {return std::nullopt;}
     };
     Request::Request (
+        Server const & server_,
         int const & clientSocket_,
         Method const & method_,
         std::string const & path_,
         std::map <std::string, std::string> const & headers_
-    ) : clientSocket (clientSocket_), method (method_), path (path_), headers (headers_) {};
+    ) : server (server_), clientSocket (clientSocket_), method (method_), path (path_), headers (headers_) {};
 };

@@ -9,12 +9,14 @@ namespace HTStack {
         int const & backlog_,
         int const & clientThreadPoolSize_,
         int const & maxRecvSize_,
-        bool const & sloppySocketRestart_
+        bool const & sloppySocketRestart_,
+        int const & streamedResponseBufferSize_
     ) : appLocations (appLocations_),
     autoStart (autoStart_),
     port (port_),
     backlog (backlog_),
     clientThreadPoolSize (clientThreadPoolSize_),
     maxRecvSize (maxRecvSize_),
-    sloppySocketRestart (sloppySocketRestart_) {};
+    sloppySocketRestart (sloppySocketRestart_),
+    streamedResponseBufferSize (streamedResponseBufferSize_) {};
 };

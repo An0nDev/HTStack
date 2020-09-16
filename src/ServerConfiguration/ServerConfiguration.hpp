@@ -12,6 +12,7 @@ namespace HTStack {
         int clientThreadPoolSize;
         int maxRecvSize;
         bool sloppySocketRestart;
+        int streamedResponseBufferSize;
         ServerConfiguration (
             std::vector <std::string> const & appLocations_,
             bool const & autoStart_,
@@ -19,7 +20,8 @@ namespace HTStack {
             int const & backlog_,
             int const & clientThreadPoolSize_,
             int const & maxRecvSize_,
-            bool const & sloppySocketRestart_
+            bool const & sloppySocketRestart_,
+            int const & streamedResponseBufferSize_
         );
     };
 };

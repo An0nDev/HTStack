@@ -1,5 +1,6 @@
 #include "TestApp.hpp"
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "../../src/Response/Response.hpp"
 
@@ -22,8 +23,8 @@ void TestApp::onRequest (HTStack::Request & request) {
         std::cout << "[TA] Header " << header.first << " has value " << header.second << std::endl;
     }
 
-    std::string responseString ("Hello from TestApp!");
-    HTStack::Response response (200, responseString); // 200 = OK
+    std::ifstream testFileStream ("Test.txt", std::ifstream::binary);
+    HTStack::Response response (200, &testFileStream); // 200 = OK
     response.respondTo (request);
 
     std::cout << "[TA] onRequest call completed" << std::endl;

@@ -18,7 +18,8 @@ int main () {
         1024, // backlog
         std::thread::hardware_concurrency (), // clientThreadPoolSize
         65535, // maxRecvSize
-        true // sloppySocketRestart
+        true, // sloppySocketRestart
+        1024 // streamedResponseBufferSize
     );
     std::cout << "[TS] Starting up server..." << std::endl;
     {

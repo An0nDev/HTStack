@@ -13,7 +13,7 @@ namespace HTStack {
         static const std::string statusCodeAndTextSeparator;
         static const std::string headerNameAndValueSeparator;
         static const std::map <int, std::string> statuses;
-        void sendTo (int const & clientSocket);
+        void sendTo (int const & clientSocket, int const & streamedResponseBufferSize);
         void writeText_ (int const & clientSocket, std::string const & text);
         void writeData_ (int const & clientSocket, std::vector <char> const & data);
     public:

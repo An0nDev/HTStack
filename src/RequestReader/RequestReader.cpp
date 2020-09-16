@@ -87,6 +87,6 @@ namespace HTStack {
             headers.insert ({headerName, headerValue});
         }
         reader.ensureEmpty ();
-        return std::optional <Request> {Request (clientSocket, method, path, headers)};
+        return std::optional <Request> {Request (server, clientSocket, method, path, headers)};
     };
 };
