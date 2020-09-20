@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ClientThreadPool.hpp"
+
 #include <netinet/ip.h>
 #include <vector>
 #include <thread>
@@ -11,6 +13,7 @@ namespace HTStack {
     class SocketClientManager;
     class SocketClientManager {
     private:
+        /*
         class ThreadPoolTask {
         public:
             int clientSocket;
@@ -32,12 +35,15 @@ namespace HTStack {
         std::condition_variable availableNotifier;
         ThreadPoolTask* newTask;
         std::condition_variable newTaskNotifier;
-        std::mutex clientThreadLock;
+        std::mutex clientThreadLock;*/
+
+        ClientThreadPool pool;
         bool stopped;
 
-        void closeConnection_ (int const & clientSocket);
-
-        void clientThreadFunc ();
+        /*void closeConnection_ (int const & clientSocket);
+        std::mutex printLock;
+        void safePrint_ (std::string const & message);
+        void clientThreadFunc ();*/
     public:
         explicit SocketClientManager (Server & server_);
 
