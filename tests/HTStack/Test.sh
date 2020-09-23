@@ -18,6 +18,7 @@ clang++ \
     -lpthread \
     $SRC_DIR/HTTPUtils/MIMEType.cpp \
     $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
+    $SRC_DIR/ClientSocket/ClientSocket.cpp \
     $SRC_DIR/SocketClientManager/ClientThreadTask.cpp \
     $SRC_DIR/SocketClientManager/ClientThread.cpp \
     $SRC_DIR/SocketClientManager/ClientThreadPool.cpp \
