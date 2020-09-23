@@ -22,10 +22,20 @@ void TestApp::onRequest (HTStack::Request & request) {
     for (std::pair <std::string, std::string> header : request.headers) {
         std::cout << "[TA] Header " << header.first << " has value " << header.second << std::endl;
     }
-
-    std::ifstream testFileStream ("Test.txt", std::ifstream::binary);
-    HTStack::Response response (200, &testFileStream); // 200 = OK
-    response.respondTo (request);
+    if (request.path == "/") {
+        std::ifstream testFileStream ("Test.txt", std::ifstream::binary);
+        HTStack::MIMEType mimeType ("Test.txt", true); // guess
+        HTStack::Response response (200, &testFileStream, &mimeType); // 200 = OK
+        response.respondTo (request);
+    } else if (request.path == "/logo") {
+        std::ifstream logoFileStream ("logo.png", std::ifstream::binary);
+        HTStack::MIMEType mimeType ("logo.png", true); // guess
+        HTStack::Response response (200, &logoFileStream, &mimeType); // 200 = OK
+        response.respondTo (request);
+    } else {
+        HTStack::Response response (404);
+        response.respondTo (request);
+    }
 
     std::cout << "[TA] onRequest call completed" << std::endl;
 };

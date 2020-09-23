@@ -34,7 +34,7 @@ namespace HTStack {
     */
 
     SocketClientManager::SocketClientManager (Server & server_)
-    : server (server_) {
+    : server (server_), pool (server) {
         /*
         for (int clientThreadNumber = 0; clientThreadNumber < server.configuration.clientThreadPoolSize; clientThreadNumber++) {
             std::thread* clientThread = new std::thread (&SocketClientManager::clientThreadFunc, this);
@@ -155,6 +155,7 @@ namespace HTStack {
     };
 
     void SocketClientManager::waitForAll () {
+        /*
         clientThreadLock.lock ();
 
         stopped = true;
@@ -173,5 +174,8 @@ namespace HTStack {
         clientThreadPool.clear ();
 
         clientThreadLock.unlock ();
+        */
+
+        pool.drain ();
     };
 };

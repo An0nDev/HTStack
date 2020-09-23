@@ -98,35 +98,46 @@ namespace HTStack {
         startLine.append (statuses.at (statusCode));
         startLine.append (CRLF);
         writeText_ (clientSocket, startLine);
-        int contentLength;
-        if (streamed) {
-            inputStream->seekg (0, std::istream::end);
-            contentLength = inputStream->tellg ();
-            inputStream->seekg (0, std::istream::beg);
-        } else {
-            contentLength = data.size ();
+
+        if (hasData && hasMimeType) {
+            headers.try_emplace ("Content-Type", mimeType->type);
         }
-        headers.try_emplace ("Content-Length", std::to_string (contentLength));
+
+        if (hasData) {
+            int contentLength;
+            if (streamed) {
+                inputStream->seekg (0, std::istream::end);
+                contentLength = inputStream->tellg ();
+                inputStream->seekg (0, std::istream::beg);
+            } else {
+                contentLength = data.size ();
+            }
+            headers.try_emplace ("Content-Length", std::to_string (contentLength));
+        }
+
         for (std::pair <std::string, std::string> header : headers) {
             std::string headerString (header.first + headerNameAndValueSeparator + header.second + CRLF);
             writeText_ (clientSocket, headerString);
         }
         writeText_ (clientSocket, CRLF);
-        if (streamed) {
-            char* inputStreamBuffer = new char [streamedResponseBufferSize];
-            while (!inputStream->eof ()) {
-                inputStream->read (inputStreamBuffer, streamedResponseBufferSize);
-                int readBytesCount;
-                if (inputStream->eof ()) {
-                    readBytesCount = inputStream->gcount ();
-                } else {
-                    readBytesCount = streamedResponseBufferSize;
+
+        if (hasData) {
+            if (streamed) {
+                char* inputStreamBuffer = new char [streamedResponseBufferSize];
+                while (!inputStream->eof ()) {
+                    inputStream->read (inputStreamBuffer, streamedResponseBufferSize);
+                    int readBytesCount;
+                    if (inputStream->eof ()) {
+                        readBytesCount = inputStream->gcount ();
+                    } else {
+                        readBytesCount = streamedResponseBufferSize;
+                    }
+                    writeData_ (clientSocket, std::vector <char> {inputStreamBuffer, inputStreamBuffer + readBytesCount});
                 }
-                writeData_ (clientSocket, std::vector <char> {inputStreamBuffer, inputStreamBuffer + readBytesCount});
+                delete [] inputStreamBuffer;
+            } else {
+                writeData_ (clientSocket, data);
             }
-            delete [] inputStreamBuffer;
-        } else {
-            writeData_ (clientSocket, data);
         }
     };
     void Response::writeText_ (int const & clientSocket, std::string const & text) {
@@ -139,16 +150,19 @@ namespace HTStack {
         CInteropUtils::systemErrorCheck ("send ()", sendReturnValue);
     }
     Response::Response (int const & statusCode_)
-    : statusCode (statusCode_), streamed (false), inputStream (nullptr) {};
+    : statusCode (statusCode_), hasData (false) {};
     Response::Response (int const & statusCode_, std::map <std::string, std::string> const & headers_)
-    : statusCode (statusCode_), headers (headers_), streamed (false), inputStream (nullptr) {};
+    : statusCode (statusCode_), headers (headers_), hasData (false) {};
     Response::Response (int const & statusCode_, std::string const & text)
-    : statusCode (statusCode_), data (text.begin (), text.end ()), streamed (false), inputStream (nullptr) {}
+    : statusCode (statusCode_), data (text.begin (), text.end ()), hasData (true), streamed (false), inputStream (nullptr), hasMimeType (true), ownsMimeType (true), mimeType (new MIMEType ("application/text", false)) {}
     Response::Response (int const & statusCode_, std::vector <char> const & data_)
-    : statusCode (statusCode_), data (data_), streamed (false), inputStream (nullptr) {};
-    Response::Response (int const & statusCode_, std::istream* inputStream_)
-    : statusCode (statusCode_), streamed (true), inputStream (inputStream_) {};
+    : statusCode (statusCode_), data (data_), hasData (true), streamed (false), inputStream (nullptr), hasMimeType (true), ownsMimeType (true), mimeType (new MIMEType ("application/octet-stream", false)) {};
+    Response::Response (int const & statusCode_, std::istream* inputStream_, MIMEType* mimeType_)
+    : statusCode (statusCode_), hasData (true), streamed (true), inputStream (inputStream_), hasMimeType (true), ownsMimeType (false), mimeType (mimeType_) {};
     void Response::respondTo (Request const & request) {
         sendTo (request.clientSocket, request.server.configuration.streamedResponseBufferSize);
+    };
+    Response::~Response () {
+        if (hasData && hasMimeType && ownsMimeType) delete mimeType;
     };
 };

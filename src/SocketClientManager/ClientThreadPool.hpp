@@ -2,7 +2,9 @@
 #include <condition_variable>
 
 namespace HTStack {
+    class Server;
     class ClientThreadPool {
+        Server & server;
         int size;
         bool filled;
         std::vector <ClientThread*> threads;
@@ -10,7 +12,7 @@ namespace HTStack {
         std::mutex readyTriggerLock;
         std::condition_variable readyTrigger;
     public:
-        ClientThreadPool ();
+        ClientThreadPool (Server & server_);
         void fill (int const & size);
         void execute (ClientThreadTask const & task);
         void drain ();

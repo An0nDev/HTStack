@@ -1,11 +1,16 @@
+#pragma once
+
 #include "ClientThreadTask.hpp"
 #include <mutex>
 #include <thread>
 #include <condition_variable>
 
 namespace HTStack {
+    class Server;
     class ClientThread {
     private:
+        Server & server;
+
         std::mutex canAcceptLock;
         bool canAccept_;
         std::mutex stoppedLock;
@@ -23,9 +28,9 @@ namespace HTStack {
 
         std::thread* thread;
     public:
-        ClientThread (std::condition_variable & readyTrigger_);
+        ClientThread (Server & server_, std::condition_variable & readyTrigger_);
         bool canAccept ();
-        void accept ();
+        void accept (ClientThreadTask const & task);
         ~ClientThread ();
     };
 };

@@ -1,13 +1,19 @@
 #include "ClientThread.hpp"
+#include "../CInteropUtils/CInteropUtils.hpp"
+#include "../Server/Server.hpp"
+#include <iostream>
+#include <optional>
+#include <unistd.h>
 
 namespace HTStack {
     void ClientThread::func () {
         while (true) {
             readyTrigger.notify_one ();
 
-            acceptanceTriggerLock.unlock ();
-            acceptanceTrigger.wait ();
-            acceptanceTriggerLock.lock ();
+            {
+                std::unique_lock <std::mutex> acceptanceTriggerUniqueLock (acceptanceTriggerLock);
+                acceptanceTrigger.wait (acceptanceTriggerUniqueLock);
+            }
 
             stoppedLock.lock ();
             if (stopped) {
@@ -17,7 +23,7 @@ namespace HTStack {
             stoppedLock.unlock ();
 
             canAcceptLock.lock ();
-            canAccept = false;
+            canAccept_ = false;
             canAcceptLock.unlock ();
 
             newTaskLock.lock ();
@@ -25,25 +31,38 @@ namespace HTStack {
             delete newTask;
             newTaskLock.unlock ();
 
-            std::cout << "WE GOT A TASK!!!!!" << std::endl;
+            executeTask_ (task);
 
             canAcceptLock.lock ();
-            canAccept = true;
+            canAccept_ = true;
             canAcceptLock.unlock ();
 
             readyTrigger.notify_one ();
         }
     };
     void ClientThread::executeTask_ (ClientThreadTask const & task) {
+        std::optional <Request> requestOptional = server.requestReader.readFrom (task.clientSocket, task.clientAddress);
+        // bool closeConnection;
+        if (requestOptional.has_value ()) {
+            Request request = requestOptional.value ();
+            server.appLoader.handleRequest (request);
+            // closeConnection = ! (request.headers.count (std::string ("Connection")) > 0 && request.headers ["Connection"] == std::string ("keep-alive"));
+        }
 
+        int shutdownReturnValue = shutdown (task.clientSocket, SHUT_RDWR);
+        CInteropUtils::systemErrorCheck ("shutdown ()", shutdownReturnValue);
+
+        int closeReturnValue = close (task.clientSocket);
+        CInteropUtils::systemErrorCheck ("close ()", closeReturnValue);
     };
-    ClientThread::ClientThread (std::condition_variable & readyTrigger_) : canAccept_ (true), stopped (false), readyTrigger (readyTrigger_), thread (
-        new std::thread (&ClientThread::func, *this)
+    ClientThread::ClientThread (Server & server_, std::condition_variable & readyTrigger_) : server (server_), canAccept_ (true), stopped (false), readyTrigger (readyTrigger_), thread (
+        new std::thread (&ClientThread::func, this)
     ) {};
-    void ClientThread::canAccept () {
+    bool ClientThread::canAccept () {
         canAcceptLock.lock ();
-        return canAccept_;
+        bool temp = canAccept_;
         canAcceptLock.unlock ();
+        return temp;
     };
     void ClientThread::accept (ClientThreadTask const & task) {
         newTaskLock.lock ();

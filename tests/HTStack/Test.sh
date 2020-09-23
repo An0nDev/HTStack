@@ -8,6 +8,7 @@ clang++ \
     $SRC_DIR/App/App.cpp \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/Response/Response.cpp \
+    $SRC_DIR/HTTPUtils/MIMEType.cpp \
     $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
     TestApp.cpp -o TestApp.so
 
@@ -15,7 +16,11 @@ clang++ \
     -std=c++17 \
     -ldl \
     -lpthread \
+    $SRC_DIR/HTTPUtils/MIMEType.cpp \
     $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
+    $SRC_DIR/SocketClientManager/ClientThreadTask.cpp \
+    $SRC_DIR/SocketClientManager/ClientThread.cpp \
+    $SRC_DIR/SocketClientManager/ClientThreadPool.cpp \
     $SRC_DIR/SocketClientManager/SocketClientManager.cpp \
     $SRC_DIR/SocketManager/SocketManager.cpp \
     $SRC_DIR/Server/Server.cpp \

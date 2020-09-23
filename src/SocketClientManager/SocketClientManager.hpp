@@ -13,6 +13,7 @@ namespace HTStack {
     class SocketClientManager;
     class SocketClientManager {
     private:
+        Server & server;
         /*
         class ThreadPoolTask {
         public:
@@ -46,8 +47,6 @@ namespace HTStack {
         void clientThreadFunc ();*/
     public:
         explicit SocketClientManager (Server & server_);
-
-        Server & server;
 
         void create (int const & clientSocket, sockaddr_in const & clientAddress);
         // NOTE: waitForAll does *not* disallow future calls to create;
