@@ -4,6 +4,7 @@
 #include "AppContainer.hpp"
 #include "../Request/Request.hpp"
 #include "../App/App.hpp"
+#include <exception>
 
 namespace HTStack {
     AppLoader::AppLoader (Server & server_) : server (server_) {
@@ -37,7 +38,11 @@ namespace HTStack {
     AppLoader::~AppLoader () {
         for (AppContainer* appContainer : apps) {
             if (appContainer->isLoaded) {
-                appContainer->unload ();
+                try {
+                    appContainer->unload ();
+                } catch (const std::runtime_error & e) {
+                    if (std::uncaught_exceptions () > 0) throw e;
+                }
             }
             delete appContainer;
         }
