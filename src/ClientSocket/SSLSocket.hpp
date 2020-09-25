@@ -4,6 +4,11 @@
 
 namespace HTStack {
     class SSLSocket : ClientSocket {
-        SSLSocket (int clientSocketFileDescriptor);
+    private:
+        SSL* sslClient;
+        SSLSocket (int clientSocketFileDescriptor, SSL_CTX* sslServer);
+        read (int const & maxSize);
+        write (std::vector <char> const & data);
+        ~SSLSocket ();
     };
 };
