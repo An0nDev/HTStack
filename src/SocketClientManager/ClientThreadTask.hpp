@@ -1,13 +1,14 @@
 #pragma once
 
+#include "../ClientSocket/ClientSocket.hpp"
+
 #include <netinet/ip.h>
 #include <vector>
 
 namespace HTStack {
     class ClientThreadTask {
     public:
-        int clientSocket;
-        sockaddr_in clientAddress;
-        ClientThreadTask (int const & clientSocket_, sockaddr_in const & clientAddress_);
+        ClientSocket* clientSocket;
+        ClientThreadTask (ClientSocket* const & clientSocket_);
     };
 };

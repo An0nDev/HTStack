@@ -1,25 +1,27 @@
 #include "InternalReader.hpp"
+
 #include "../Server/Server.hpp"
 #include "../CInteropUtils/CInteropUtils.hpp"
+
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdexcept>
 #include <iostream>
+#include <system_error>
 
 namespace HTStack {
-    InternalReader::InternalReader (Server const & server_, int const & clientSocket_)
+    InternalReader::InternalReader (Server const & server_, ClientSocket* const & clientSocket_)
     : server (server_), clientSocket (clientSocket_) {};
     std::optional <std::vector <char>> InternalReader::recv () {
-        char recvBuffer [server.configuration.maxRecvSize];
-        ssize_t recvReturnValue = ::recv (clientSocket, &recvBuffer, server.configuration.maxRecvSize, 0); // no flags
-        if (recvReturnValue == -1 && errno == EINVAL) {
-            return std::nullopt; // Failure (socket closed)
+        try {
+            std::vector <char> data (clientSocket->read (server.configuration.maxRecvSize));
+            return std::optional <std::vector <char>> (data);
+        } catch (std::system_error const & systemError) {
+            std::cerr << "Caught error when reading from socket: " << systemError.what () << std::endl;
+            return std::nullopt;
         }
-        CInteropUtils::systemErrorCheck ("recv ()", recvReturnValue);
-        std::vector <char> dataBytes (recvBuffer, recvBuffer + recvReturnValue);
-        return std::optional <std::vector <char>> {dataBytes}; // Success
     };
     std::optional <std::vector <char>> InternalReader::recvData (int const & length) {
         throw std::logic_error ("recvData () not yet implemented");

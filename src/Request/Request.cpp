@@ -11,7 +11,7 @@ namespace HTStack {
     };
     Request::Request (
         Server const & server_,
-        int const & clientSocket_,
+        ClientSocket* const & clientSocket_,
         Method const & method_,
         std::string const & path_,
         std::map <std::string, std::string> const & headers_

@@ -1,9 +1,11 @@
 #include "RequestReader.hpp"
-#include <iostream>
+
+#include "InternalReader.hpp"
 #include "../Server/Server.hpp"
 #include "../ServerConfiguration/ServerConfiguration.hpp"
 #include "../CInteropUtils/CInteropUtils.hpp"
-#include "InternalReader.hpp"
+
+#include <iostream>
 #include <map>
 #include <utility>
 
@@ -14,7 +16,7 @@ namespace HTStack {
     const std::string RequestReader::pathAndVersionSeparator (" ");
     RequestReader::RequestReader (Server & server_)
     : server (server_) {};
-    std::optional <Request> RequestReader::readFrom (int const & clientSocket, sockaddr_in const & clientAddress) {
+    std::optional <Request> RequestReader::readFrom (ClientSocket* const & clientSocket) {
         InternalReader reader (server, clientSocket);
 
         std::optional <std::string> requestLineOptional = reader.recvTextUntil (CRLF);

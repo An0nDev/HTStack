@@ -1,11 +1,16 @@
 #pragma once
 
+#include "../SocketClientManager/SocketClientManager.hpp"
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 #include <thread>
-#include <sys/types.h>
-#include <netinet/ip.h>
 #include <system_error>
 #include <mutex>
-#include "../SocketClientManager/SocketClientManager.hpp"
+
+#include <sys/types.h>
+#include <netinet/ip.h>
 
 namespace HTStack {
     class Server;
@@ -22,6 +27,8 @@ namespace HTStack {
 
         sockaddr_in serverAddress;
         int serverSocket;
+
+        SSL_CTX* sslServer; // Only set if SSL is enabled using ServerConfiguration
 
         void setup_ ();
         void run_ ();

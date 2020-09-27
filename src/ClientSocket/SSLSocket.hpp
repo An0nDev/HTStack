@@ -3,12 +3,13 @@
 #include <openssl/err.h>
 
 namespace HTStack {
-    class SSLSocket : ClientSocket {
+    class SSLSocket : public ClientSocket {
     private:
         SSL* sslClient;
-        SSLSocket (int clientSocketFileDescriptor, SSL_CTX* sslServer);
-        read (int const & maxSize);
-        write (std::vector <char> const & data);
+    public:
+        SSLSocket (int const & clientSocketFileDescriptor, sockaddr_in const & clientSocketAddress, SSL_CTX* const & sslServer);
+        std::vector <char> read (int const & maxSize);
+        void write (std::vector <char> const & data);
         ~SSLSocket ();
     };
 };

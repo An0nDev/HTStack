@@ -1,5 +1,8 @@
+#pragma once
+
 #include "../Request/Request.hpp"
 #include "../HTTPUtils/MIMEType.hpp"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -14,9 +17,8 @@ namespace HTStack {
         static const std::string statusCodeAndTextSeparator;
         static const std::string headerNameAndValueSeparator;
         static const std::map <int, std::string> statuses;
-        void sendTo (int const & clientSocket, int const & streamedResponseBufferSize);
-        void writeText_ (int const & clientSocket, std::string const & text);
-        void writeData_ (int const & clientSocket, std::vector <char> const & data);
+        void sendTo (ClientSocket* const & clientSocket, int const & streamedResponseBufferSize);
+        void writeText_ (ClientSocket* const & clientSocket, std::string const & text);
     public:
         int statusCode;
         std::map <std::string, std::string> headers;

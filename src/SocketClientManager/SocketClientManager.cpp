@@ -109,7 +109,7 @@ namespace HTStack {
         CInteropUtils::systemErrorCheck ("close ()", closeReturnValue);
     };
     */
-    void SocketClientManager::create (int const & clientSocket, sockaddr_in const & clientAddress) {
+    void SocketClientManager::create (ClientSocket* const & clientSocket) {
         /*
         safePrint_ ("SocketClientManager::create () called");
         if (stopped) {
@@ -151,7 +151,7 @@ namespace HTStack {
         safePrint_ ("notified one");
         */
 
-        pool.execute (ClientThreadTask (clientSocket, clientAddress));
+        pool.execute (ClientThreadTask (clientSocket));
     };
 
     void SocketClientManager::waitForAll () {

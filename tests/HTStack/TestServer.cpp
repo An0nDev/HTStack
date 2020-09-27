@@ -1,6 +1,7 @@
 #include "TestServer.hpp"
 #include "../../src/ServerConfiguration/ServerConfiguration.hpp"
 #include "../../src/Server/Server.hpp"
+#include "../../src/SSL/SSLSetupVars.hpp"
 #include "../../src/CInteropUtils/CInteropUtils.hpp"
 #include <string>
 #include <vector>
@@ -8,6 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <signal.h>
+#include <openssl/ssl.h>
 
 void dummySignalHandler (int signal) {};
 
@@ -18,12 +20,18 @@ int main () {
     HTStack::ServerConfiguration serverConfiguration (
         appLocations,
         true, // autoStart
+        "0.0.0.0", // ip
         8080, // port
         1024, // backlog
         std::thread::hardware_concurrency (), // clientThreadPoolSize
         65535, // maxRecvSize
         true, // sloppySocketRestart
-        1024 // streamedResponseBufferSize
+        1024, // streamedResponseBufferSize
+        HTStack::SSLSetupVars ( // use empty constructor to disable
+            "cert.pem", // certChainFilePath
+            "key.pem", // keyFilePath
+            SSL_FILETYPE_PEM // keyFileType
+        ) // ssl
     );
     std::cout << "[TS] Starting up server..." << std::endl;
     {

@@ -2,6 +2,8 @@
 
 #include "ClientThreadPool.hpp"
 
+#include "../ClientSocket/ClientSocket.hpp"
+
 #include <netinet/ip.h>
 #include <vector>
 #include <thread>
@@ -48,7 +50,7 @@ namespace HTStack {
     public:
         explicit SocketClientManager (Server & server_);
 
-        void create (int const & clientSocket, sockaddr_in const & clientAddress);
+        void create (ClientSocket* const & clientSocket);
         // NOTE: waitForAll does *not* disallow future calls to create;
         // make sure to disable the mechanism that calls create before calling waitForAll!
         void waitForAll ();

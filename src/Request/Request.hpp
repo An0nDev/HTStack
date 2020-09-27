@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../ClientSocket/ClientSocket.hpp"
+
 #include <map>
 #include <optional>
 
@@ -8,7 +10,7 @@ namespace HTStack {
     class Request {
     public:
         Server const & server;
-        int clientSocket;
+        ClientSocket* clientSocket;
         enum Method {
             NONE    = -1, // do not use! may break things
             GET     = 0, HEAD   = 1, POST = 2,
@@ -22,7 +24,7 @@ namespace HTStack {
         bool complete = false;
         Request (
             Server const & server_,
-            int const & clientSocket_,
+            ClientSocket* const & clientSocket_,
             Method const & method_,
             std::string const & path_,
             std::map <std::string, std::string> const & headers_

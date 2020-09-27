@@ -1,9 +1,11 @@
 #pragma once
 
+#include "../Request/Request.hpp"
+#include "../ClientSocket/ClientSocket.hpp"
+
 #include <netinet/ip.h>
 #include <vector>
 #include <optional>
-#include "../Request/Request.hpp"
 
 namespace HTStack {
     class Server;
@@ -16,6 +18,6 @@ namespace HTStack {
     public:
         Server & server;
         explicit RequestReader (Server & server_);
-        std::optional <Request> readFrom (int const & clientSocket, sockaddr_in const & clientAddress);
+        std::optional <Request> readFrom (ClientSocket* const & clientSocket);
     };
 };

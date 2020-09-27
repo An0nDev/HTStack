@@ -86,7 +86,7 @@ namespace HTStack {
         {510, "Not Extended"},
         {511, "Network Authentication Required"}
     };
-    void Response::sendTo (int const & clientSocket, int const & streamedResponseBufferSize) {
+    void Response::sendTo (ClientSocket* const & clientSocket, int const & streamedResponseBufferSize) {
         if (statuses.count (statusCode) == 0) {
             throw std::logic_error ("Invalid response status code " + std::to_string (statusCode));
         }
@@ -132,23 +132,18 @@ namespace HTStack {
                     } else {
                         readBytesCount = streamedResponseBufferSize;
                     }
-                    writeData_ (clientSocket, std::vector <char> {inputStreamBuffer, inputStreamBuffer + readBytesCount});
+                    clientSocket->write (std::vector <char> (inputStreamBuffer, inputStreamBuffer + readBytesCount));
                 }
                 delete [] inputStreamBuffer;
             } else {
-                writeData_ (clientSocket, data);
+                clientSocket->write (data);
             }
         }
     };
-    void Response::writeText_ (int const & clientSocket, std::string const & text) {
+    void Response::writeText_ (ClientSocket* const & clientSocket, std::string const & text) {
         std::vector <char> textVector (text.begin (), text.end ());
-        writeData_ (clientSocket, textVector);
+        clientSocket->write (textVector);
     };
-    void Response::writeData_ (int const & clientSocket, std::vector <char> const & data) {
-        const char* dataPointer (reinterpret_cast <const char*> (data.data ()));
-        ssize_t sendReturnValue = send (clientSocket, static_cast <const void*> (dataPointer), data.size (), 0);
-        CInteropUtils::systemErrorCheck ("send ()", sendReturnValue);
-    }
     Response::Response (int const & statusCode_)
     : statusCode (statusCode_), hasData (false) {};
     Response::Response (int const & statusCode_, std::map <std::string, std::string> const & headers_)

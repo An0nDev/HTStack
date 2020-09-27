@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 namespace HTStack {
-    ClientSocket::ClientSocket (int const & fd_) : fd (fd_) {};
+    ClientSocket::ClientSocket (int const & fd_, sockaddr_in const & address_) : fd (fd_), address (address_) {};
     std::vector <char> ClientSocket::read (int const & maxSize) {
         char buffer [maxSize];
         ssize_t recvReturnValue = ::recv (fd, &buffer, maxSize, 0); // flags = 0
