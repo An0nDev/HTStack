@@ -11,8 +11,6 @@
 #include <signal.h>
 #include <openssl/ssl.h>
 
-void dummySignalHandler (int signal) {};
-
 int main () {
     std::string appLocation ("TestApp.so");
     std::vector <std::string> appLocations;
