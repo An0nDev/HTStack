@@ -18,7 +18,7 @@ namespace HTStack {
             OPTIONS = 6, TRACE  = 7, PATCH = 8
         };
         Method method;
-        static std::optional <Method> methodStringToEnum (std::string const & methodString);
+        static Method methodStringToEnum (std::string const & methodString);
         std::string path;
         std::map <std::string, std::string> headers;
         bool complete = false;

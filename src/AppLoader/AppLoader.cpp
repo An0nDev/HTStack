@@ -1,6 +1,7 @@
 #include "AppLoader.hpp"
 #include "../Server/Server.hpp"
 #include "../ServerConfiguration/ServerConfiguration.hpp"
+#include "../ExceptionUtils/ExceptionUtils.hpp"
 #include "AppContainer.hpp"
 #include "../Request/Request.hpp"
 #include "../App/App.hpp"
@@ -41,7 +42,7 @@ namespace HTStack {
                 try {
                     appContainer->unload ();
                 } catch (const std::runtime_error & e) {
-                    if (std::uncaught_exceptions () > 0) throw e;
+                    ExceptionUtils::safeThrow (e);
                 }
             }
             delete appContainer;

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 #include <utility>
+#include <stdexcept>
 
 namespace HTStack {
     const std::string RequestReader::CRLF ("\r\n");
@@ -16,26 +17,18 @@ namespace HTStack {
     const std::string RequestReader::pathAndVersionSeparator (" ");
     RequestReader::RequestReader (Server & server_)
     : server (server_) {};
-    std::optional <Request> RequestReader::readFrom (ClientSocket* const & clientSocket) {
+    Request RequestReader::readFrom (ClientSocket* const & clientSocket) {
         InternalReader reader (server, clientSocket);
 
-        std::optional <std::string> requestLineOptional = reader.recvTextUntil (CRLF);
-        if (!requestLineOptional.has_value ()) {
-            return std::nullopt;
-        }
-        std::string requestLine = requestLineOptional.value ();
+        std::string requestLine = reader.recvTextUntil (CRLF);
         size_t methodAndPathSeparatorLocation = requestLine.find (methodAndPathSeparator);
         if (methodAndPathSeparatorLocation == std::string::npos) {
-            return std::nullopt;
+            throw std::runtime_error ("Method and path separator not found");
         }
         std::string methodString (
             requestLine.substr (0, methodAndPathSeparatorLocation)
         );
-        std::optional <Request::Method> methodOptional = Request::methodStringToEnum (methodString);
-        if (!methodOptional.has_value ()) {
-            return std::nullopt; // Invalid method string
-        }
-        Request::Method method = methodOptional.value ();
+        Request::Method method = Request::methodStringToEnum (methodString);
         std::string pathAndVersion (
             requestLine.substr (
                 methodAndPathSeparatorLocation + methodAndPathSeparator.size (),
@@ -46,7 +39,7 @@ namespace HTStack {
         );
         size_t pathAndVersionSeparatorLocation = pathAndVersion.find (pathAndVersionSeparator);
         if (pathAndVersionSeparatorLocation == std::string::npos) {
-            return std::nullopt;
+            throw std::runtime_error ("Path and version separator not found");
         }
         std::string path (
             pathAndVersion.substr (0, pathAndVersionSeparatorLocation)
@@ -63,11 +56,7 @@ namespace HTStack {
 
         std::map <std::string, std::string> headers;
         while (true) {
-            std::optional <std::string> headerLineOptional = reader.recvTextUntil (CRLF);
-            if (!headerLineOptional.has_value ()) {
-                return std::nullopt;
-            }
-            std::string headerLine = headerLineOptional.value ();
+            std::string headerLine = reader.recvTextUntil (CRLF);
             if (headerLine.empty ()) {
                 break;
             }
@@ -88,7 +77,6 @@ namespace HTStack {
             );
             headers.insert ({headerName, headerValue});
         }
-        reader.ensureEmpty ();
-        return std::optional <Request> {Request (server, clientSocket, method, path, headers)};
+        return Request (server, clientSocket, method, path, headers);
     };
 };

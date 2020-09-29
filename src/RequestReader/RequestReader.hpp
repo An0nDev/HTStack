@@ -18,6 +18,6 @@ namespace HTStack {
     public:
         Server & server;
         explicit RequestReader (Server & server_);
-        std::optional <Request> readFrom (ClientSocket* const & clientSocket);
+        Request readFrom (ClientSocket* const & clientSocket);
     };
 };

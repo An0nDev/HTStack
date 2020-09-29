@@ -1,13 +1,15 @@
 #include "Request.hpp"
 
+#include <stdexcept>
+
 namespace HTStack {
-    std::optional <Request::Method> Request::methodStringToEnum (std::string const & methodString) {
-        #define check(NAME) if (methodString == #NAME) { return std::optional <Request::Method> {Request::Method::NAME}; }
+    Request::Method Request::methodStringToEnum (std::string const & methodString) {
+        #define check(NAME) if (methodString == #NAME) { return Request::Method::NAME; }
 
         check(GET)     else check(HEAD)   else check(POST) else
         check(PUT)     else check(DELETE) else check(CONNECT) else
         check(OPTIONS) else check(TRACE)  else check(PATCH)
-        else {return std::nullopt;}
+        else {throw std::runtime_error ("Invalid method string");}
     };
     Request::Request (
         Server const & server_,

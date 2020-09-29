@@ -41,15 +41,16 @@ namespace HTStack {
         }
     };
     void ClientThread::executeTask_ (ClientThreadTask const & task) {
-        std::optional <Request> requestOptional = server.requestReader.readFrom (task.clientSocket);
-        // bool closeConnection;
-        if (requestOptional.has_value ()) {
-            Request request = requestOptional.value ();
+        try {
+            Request request = server.requestReader.readFrom (task.clientSocket);
             server.appLoader.handleRequest (request);
-            // closeConnection = ! (request.headers.count (std::string ("Connection")) > 0 && request.headers ["Connection"] == std::string ("keep-alive"));
-        }
 
-        delete task.clientSocket;
+            delete task.clientSocket;
+        } catch (std::runtime_error const & exception) {
+            std::cerr << "Caught non-fatal runtime error: " << exception.what () << std::endl;
+        } catch (std::system_error const & exception) {
+            std::cerr << "Caught non-fatal system error: " << exception.what () << std::endl;
+        }
     };
     ClientThread::ClientThread (Server & server_, std::condition_variable & readyTrigger_) : server (server_), canAccept_ (true), stopped (false), readyTrigger (readyTrigger_), thread (
         new std::thread (&ClientThread::func, this)
