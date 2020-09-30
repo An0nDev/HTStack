@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 
 namespace HTStack {
     class App;
@@ -10,7 +11,9 @@ namespace HTStack {
     private:
         SharedObjectHandle handle = nullptr;
     public:
+        std::string name;
         std::string location;
+        std::map <std::string, std::string> settings;
         bool isLoaded = false;
         App* app = nullptr;
         explicit AppContainer (std::string const & location_);

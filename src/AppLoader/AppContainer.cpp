@@ -4,8 +4,10 @@
 #include "../App/App.hpp"
 
 namespace HTStack {
-    AppContainer::AppContainer (std::string const & location_)
-    : location (location_) {};
+    AppContainer::AppContainer (std::string const & name, std::string const & location_, std::map <std::string, std::string> const & settings, bool const & isLoaded_)
+    : name (name_), location (location_), settings (settings_) {
+        if (isLoaded_) load ();
+    };
     void AppContainer::load (Server & server) {
         if (isLoaded) {
             unload ();
