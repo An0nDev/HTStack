@@ -1,12 +1,20 @@
 #pragma once
+
 #include <vector>
 #include <string>
+#include <optional>
 #include "../SSL/SSLSetupVars.hpp"
 
 namespace HTStack {
     class ServerConfiguration {
     public:
-        std::vector <std::string> appLocations;
+        enum AppSetupType {
+            INLINE,
+            FILE
+        };
+        AppSetupType appSetupType;
+        std::optional <std::vector <std::string>> appLocations;
+        std::optional <std::string> const & appConfigPath;
         bool autoStart;
         std::string ip;
         int port;
@@ -17,7 +25,9 @@ namespace HTStack {
         int streamedResponseBufferSize;
         SSLSetupVars ssl;
         ServerConfiguration (
-            std::vector <std::string> const & appLocations_,
+            AppSetupType appSetupType_,
+            std::optional <std::vector <std::string>> const & appLocations_,
+            std::optional <std::string> const & appConfigPath,
             bool const & autoStart_,
             std::string const & ip_,
             int const & port_,
