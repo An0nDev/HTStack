@@ -3,6 +3,7 @@
 #include "../../src/Server/Server.hpp"
 #include "../../src/SSL/SSLSetupVars.hpp"
 #include "../../src/CInteropUtils/CInteropUtils.hpp"
+#include "../../src/AppConfigLoader/StaticAppConfig.hpp"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -10,13 +11,20 @@
 #include <thread>
 #include <signal.h>
 #include <openssl/ssl.h>
+#include <optional>
 
 int main () {
-    std::string appLocation ("TestApp.so");
-    std::vector <std::string> appLocations;
-    appLocations.push_back (appLocation);
     HTStack::ServerConfiguration serverConfiguration (
-        appLocations,
+        HTStack::ServerConfiguration::AppSetupType::INLINE, // appSetupType
+        std::vector <HTStack::StaticAppConfig> ({
+            HTStack::StaticAppConfig (
+                "TestApp", // name
+                "TestApp.so", // location
+                std::map <std::string, std::string> (), // settings
+                true // isLoaded
+            )
+        }), // appStaticConfigs
+        std::nullopt, // appConfigPath
         true, // autoStart
         "0.0.0.0", // ip
         8080, // port

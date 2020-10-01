@@ -4,13 +4,18 @@
 #include "../App/App.hpp"
 
 namespace HTStack {
-    AppContainer::AppContainer (std::string const & name, std::string const & location_, std::map <std::string, std::string> const & settings, bool const & isLoaded_)
-    : name (name_), location (location_), settings (settings_) {
+    AppContainer::AppContainer (
+        Server & server_,
+        std::string const & name_,
+        std::string const & location_,
+        std::map <std::string, std::string> const & settings_,
+        bool const & isLoaded_
+    ) : server (server_), name (name_), location (location_), settings (settings_) {
         if (isLoaded_) load ();
     };
-    void AppContainer::load (Server & server) {
+    void AppContainer::load () {
         if (isLoaded) {
-            unload ();
+            return;
         }
         dlerror (); // Clear previous errors
         handle = dlopen (location.data (), RTLD_NOW); // resolve all symbols immediately

@@ -8,7 +8,7 @@ class Request;
 namespace HTStack {
     class App {
         Server* server = nullptr; // Pointer to the server containing this app (initialized before on* functions called)
-        friend void AppContainer::load (Server & server);
+        friend void AppContainer::load ();
     public:
         virtual void onLoad () = 0;
         virtual void onRequest (Request & request) = 0;

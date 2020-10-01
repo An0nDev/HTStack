@@ -6,8 +6,8 @@ if [ ! -f cert.pem ] && [ ! -f key.pem ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout key.pem -out cert.pem
 fi
 
-clang++ \
-    -std=c++17 \
+clang++-11 \
+    -std=c++2a \
     -fPIC -shared \
     -lssl \
     $SRC_DIR/App/App.cpp \
@@ -17,8 +17,8 @@ clang++ \
     $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
     TestApp.cpp -o TestApp.so
 
-clang++ \
-    -std=c++17 \
+clang++-11 \
+    -std=c++2a \
     -ldl \
     -lpthread \
     -lssl -lcrypto \
@@ -36,6 +36,8 @@ clang++ \
     $SRC_DIR/SocketManager/SocketManager.cpp \
     $SRC_DIR/Server/Server.cpp \
     $SRC_DIR/App/App.cpp \
+    $SRC_DIR/AppConfigLoader/StaticAppConfig.cpp \
+    $SRC_DIR/AppConfigLoader/AppConfigLoader.cpp \
     $SRC_DIR/AppLoader/AppContainer.cpp \
     $SRC_DIR/AppLoader/AppLoader.cpp \
     $SRC_DIR/RequestReader/InternalReader.cpp \

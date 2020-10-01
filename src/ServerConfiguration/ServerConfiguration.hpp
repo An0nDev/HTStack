@@ -1,9 +1,11 @@
 #pragma once
 
+#include "../AppConfigLoader/StaticAppConfig.hpp"
+#include "../SSL/SSLSetupVars.hpp"
+
 #include <vector>
 #include <string>
 #include <optional>
-#include "../SSL/SSLSetupVars.hpp"
 
 namespace HTStack {
     class ServerConfiguration {
@@ -13,7 +15,7 @@ namespace HTStack {
             FILE
         };
         AppSetupType appSetupType;
-        std::optional <std::vector <std::string>> appLocations;
+        std::optional <std::vector <StaticAppConfig>> appStaticConfigs;
         std::optional <std::string> const & appConfigPath;
         bool autoStart;
         std::string ip;
@@ -26,7 +28,7 @@ namespace HTStack {
         SSLSetupVars ssl;
         ServerConfiguration (
             AppSetupType appSetupType_,
-            std::optional <std::vector <std::string>> const & appLocations_,
+            std::optional <std::vector <StaticAppConfig>> const & appStaticConfigs_,
             std::optional <std::string> const & appConfigPath,
             bool const & autoStart_,
             std::string const & ip_,

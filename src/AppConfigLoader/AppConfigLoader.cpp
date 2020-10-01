@@ -1,10 +1,15 @@
 #include "AppConfigLoader.hpp"
+#include "../AppLoader/AppContainer.hpp"
+#include "../AppLoader/AppLoader.hpp"
 
 #include <fstream>
+#include <iostream>
 #include <map>
 
 namespace HTStack {
-    AppConfigLoader::AppConfigLoader (AppLoader const & appLoader_, std::string const & filePath_)
+    const std::string AppConfigLoader::keyValueSeparator = ": ";
+    const std::string AppConfigLoader::indent = "    ";
+    AppConfigLoader::AppConfigLoader (AppLoader & appLoader_, std::string const & filePath_)
     : appLoader (appLoader_), filePath (filePath_) {};
     void AppConfigLoader::load () {
         std::ifstream inputStream (filePath, std::ios::in);
@@ -39,7 +44,7 @@ namespace HTStack {
                     break;
                 }
                 std::string configLine (configLineWithIndent.substr (indent.size ()));
-                std::string::size_type keyValueSeparatorPosition (configLine);
+                std::string::size_type keyValueSeparatorPosition (configLine.find (keyValueSeparator));
                 if (keyValueSeparatorPosition == std::string::npos) {
                     throw std::runtime_error ("Unable to read app config: missing key-value separator in app config line");
                 }
@@ -68,14 +73,39 @@ namespace HTStack {
             if (!haveAppLoaded) {
                 throw std::runtime_error ("Unable to read app config: _loaded for " + appName + " missing");
             }
-
-            line.clear ();
+            AppContainer* appContainer = new AppContainer (
+                appLoader.server,
+                appName,
+                appLocation,
+                appSettings,
+                appLoaded
+            );
+            appLoader.apps.push_back (appContainer);
         }
     };
     void AppConfigLoader::save () {
-
+        std::ostream* outputStream;
+        std::ofstream realOutputStream (filePath, std::ios::out);
+        bool openedProperly;
+        if (!outputStream) {
+            std::cerr << "Unable to open app config path for reading, dumping to stdout and throwing runtime_error" << std::endl;
+            outputStream = &(std::cout);
+            openedProperly = false;
+        } else { // don't mess with std::cout's exceptions!
+            realOutputStream.exceptions (std::ios_base::failbit | std::ios_base::badbit);
+            outputStream = &realOutputStream;
+            openedProperly = true;
+        }
+        for (AppContainer* app : appLoader.apps) {
+            *outputStream << app->name << ":" << std::endl;
+            *outputStream << indent << "_location" << keyValueSeparator << app->location << std::endl;
+            *outputStream << indent << "_loaded" << keyValueSeparator << (app->isLoaded ? "true" : "false") << std::endl;
+            for (std::pair <std::string, std::string> settingPair : app->settings) {
+                *outputStream << indent << settingPair.first << keyValueSeparator << settingPair.second << std::endl;
+            }
+        }
+        if (!openedProperly) {
+            throw std::runtime_error ("Unable to open app config path for reading");
+        }
     };
-    ~AppConfigLoader () {
-
-    }
 };

@@ -9,6 +9,7 @@ namespace HTStack {
     typedef App* (*AppFactory) ();
     class AppContainer {
     private:
+        Server & server;
         SharedObjectHandle handle = nullptr;
     public:
         std::string name;
@@ -16,8 +17,14 @@ namespace HTStack {
         std::map <std::string, std::string> settings;
         bool isLoaded = false;
         App* app = nullptr;
-        explicit AppContainer (std::string const & location_);
-        void load (Server & server);
+        AppContainer (
+            Server & server_,
+            std::string const & name_,
+            std::string const & location_,
+            std::map <std::string, std::string> const & settings_,
+            bool const & isLoaded_
+        );
+        void load ();
         void unload ();
         ~AppContainer ();
     };

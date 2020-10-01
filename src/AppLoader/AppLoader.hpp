@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <optional>
 
 namespace HTStack {
     class Server;
@@ -13,14 +14,24 @@ namespace HTStack {
     class AppLoader {
         Server & server;
         std::vector <AppContainer*> apps;
-        std::optional <AppConfigLoader> appConfigLoader;
+        AppConfigLoader* appConfigLoader;
 
-        _find (std::string const & appName);
+        void _setupTypeCheck (std::string const & operation);
+        AppContainer* _find (std::string const & appName);
+
+        friend void AppConfigLoader::load ();
+        friend void AppConfigLoader::save ();
     public:
         explicit AppLoader (Server & server_);
-        void loadAll ();
+        void start ();
+
+        void add (std::string const & appName, std::string const & appLocation);
+        void load (std::string const & appName);
+        void configure (std::string const & appName, std::string const & key, std::string const & value);
+        void unload (std::string const & appName);
+        void remove (std::string const & appName);
         void handleRequest (Request & request);
-        void unloadAll ();
+        void shutdown ();
         ~AppLoader ();
     };
 };

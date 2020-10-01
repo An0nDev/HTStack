@@ -4,6 +4,7 @@
 
 #include <map>
 #include <optional>
+#include <string>
 
 namespace HTStack {
     class Server;

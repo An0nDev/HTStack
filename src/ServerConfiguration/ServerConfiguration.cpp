@@ -4,7 +4,7 @@
 namespace HTStack {
     ServerConfiguration::ServerConfiguration (
         ServerConfiguration::AppSetupType appSetupType_,
-        std::optional <std::vector <std::string>> const & appLocations_,
+        std::optional <std::vector <StaticAppConfig>> const & appStaticConfigs_,
         std::optional <std::string> const & appConfigPath_,
         bool const & autoStart_,
         std::string const & ip_,
@@ -16,7 +16,7 @@ namespace HTStack {
         int const & streamedResponseBufferSize_,
         SSLSetupVars const & ssl_
     ) : appSetupType (appSetupType_),
-    appLocations (appLocations_),
+    appStaticConfigs (appStaticConfigs_),
     appConfigPath (appConfigPath_),
     autoStart (autoStart_),
     ip (ip_),
