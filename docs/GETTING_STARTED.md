@@ -1,3 +1,5 @@
+### WARNING: This documentation is outdated! Some changes have been made to the internals of how an architecture works, and code samples may be partially broken.
+
 ## Getting Started with HTStack
 DISCLAIMER: This document is a work-in-progress. Open an issue if you think something is missing or needs clarification. Thanks!
 
