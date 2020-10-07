@@ -2,17 +2,15 @@
 #include "../AppLoader/AppContainer.hpp"
 #include "../Server/Server.hpp"
 
-class Server;
-class Request;
-
 namespace HTStack {
+    class Server;
+    class Request;
     class App {
-        Server* server = nullptr; // Pointer to the server containing this app (initialized before on* functions called)
-        friend void AppContainer::load ();
+    protected:
+        Server & server;
     public:
-        virtual void onLoad () = 0;
-        virtual void onRequest (Request & request) = 0;
-        virtual void onUnload () = 0;
+        App (Server & server_);
+        virtual void handleRequest (Request & request) = 0;
         virtual ~App () {};
     };
 };

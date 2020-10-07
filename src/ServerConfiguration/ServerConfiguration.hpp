@@ -16,7 +16,7 @@ namespace HTStack {
         };
         AppSetupType appSetupType;
         std::optional <std::vector <StaticAppConfig>> appStaticConfigs;
-        std::optional <std::string> const & appConfigPath;
+        std::optional <std::string> appConfigPath;
         bool autoStart;
         std::string ip;
         int port;

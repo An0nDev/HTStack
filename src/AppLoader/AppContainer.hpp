@@ -6,7 +6,7 @@ namespace HTStack {
     class App;
     class Server;
     typedef void* SharedObjectHandle;
-    typedef App* (*AppFactory) ();
+    typedef App* (*AppFactory) (Server const & server_);
     class AppContainer {
     private:
         Server & server;

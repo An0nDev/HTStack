@@ -16,6 +16,7 @@
 
 int main () {
     HTStack::ServerConfiguration serverConfiguration (
+        /*
         HTStack::ServerConfiguration::AppSetupType::INLINE, // appSetupType
         std::vector <HTStack::StaticAppConfig> ({
             HTStack::StaticAppConfig (
@@ -26,6 +27,10 @@ int main () {
             )
         }), // appStaticConfigs
         std::nullopt, // appConfigPath
+        */
+        HTStack::ServerConfiguration::AppSetupType::FILE, // appSetupType
+        std::nullopt, // appStaticConfigs
+        std::string ("TestConfig.cfg"), // appConfigPath
         true, // autoStart
         "0.0.0.0", // ip
         8080, // port

@@ -22,18 +22,16 @@ namespace HTStack {
         if (handle == nullptr) {
             char* error = dlerror ();
             if (error == nullptr) throw std::runtime_error ("dlopen () failed, but dlerror () reports no errors thrown");
-            throw std::logic_error ("Error when opening dynamic library at " + location + ": " + *error);
+            throw std::logic_error ("Error when opening dynamic library at " + location + ": " + error);
         }
         void* factoryVoidPointer = dlsym (handle, "factory");
         if (factoryVoidPointer == nullptr) {
             char* error = dlerror ();
             if (error == nullptr) throw std::runtime_error ("dlsym () failed, but dlerror () reports no errors thrown");
-            throw std::logic_error ("Error when finding factory function in dynamic library at " + location + ": " + *error);
+            throw std::logic_error ("Error when finding factory function in dynamic library at " + location + ": " + error);
         }
         AppFactory factory = reinterpret_cast <AppFactory> (factoryVoidPointer);
-        app = factory ();
-        app->server = &server;
-        app->onLoad ();
+        app = factory (server);
         isLoaded = true;
     };
     void AppContainer::unload () {
@@ -41,7 +39,6 @@ namespace HTStack {
             return;
         }
         isLoaded = false;
-        app->onUnload ();
         delete app;
         dlerror (); // Clear the error first
         dlclose (handle);

@@ -4,11 +4,9 @@
 
 class TestApp : public HTStack::App {
 public:
-    TestApp ();
-    void onLoad ();
-    void onRequest (HTStack::Request & request);
-    void onUnload ();
+    TestApp (HTStack::Server & server);
+    void handleRequest (HTStack::Request & request);
     ~TestApp ();
 };
 
-extern "C" HTStack::App* factory ();
+extern "C" HTStack::App* factory (HTStack::Server & server);

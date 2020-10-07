@@ -14,7 +14,7 @@ namespace HTStack {
         void ensureAsyncShutdownCompleted ();
     public:
         bool isRunning = false;
-        ServerConfiguration const & configuration;
+        ServerConfiguration configuration;
         AppLoader appLoader;
         RequestReader requestReader;
         SocketManager socketManager;

@@ -4,16 +4,12 @@
 #include <vector>
 #include "../../src/Response/Response.hpp"
 
-TestApp::TestApp () {
+TestApp::TestApp (HTStack::Server & server) : App (server) {
     std::cout << "[TA] TestApp called" << std::endl;
 };
 
-void TestApp::onLoad () {
-    std::cout << "[TA] onLoad called" << std::endl;
-};
-
-void TestApp::onRequest (HTStack::Request & request) {
-    std::cout << "[TA] onRequest called" << std::endl;
+void TestApp::handleRequest (HTStack::Request & request) {
+    std::cout << "[TA] handleRequest called" << std::endl;
 
     std::cout << "[TA] Client socket: " << request.clientSocket << std::endl;
     std::cout << "[TA] Method number: " << request.method << std::endl;
@@ -37,17 +33,13 @@ void TestApp::onRequest (HTStack::Request & request) {
         response.respondTo (request);
     }
 
-    std::cout << "[TA] onRequest call completed" << std::endl;
-};
-
-void TestApp::onUnload () {
-    std::cout << "[TA] onUnload called" << std::endl;
+    std::cout << "[TA] handleRequest call completed" << std::endl;
 };
 
 TestApp::~TestApp () {
     std::cout << "[TA] ~TestApp called" << std::endl;
 };
 
-extern "C" HTStack::App* factory () {
-    return new TestApp ();
+extern "C" HTStack::App* factory (HTStack::Server & server) {
+    return new TestApp (server);
 };

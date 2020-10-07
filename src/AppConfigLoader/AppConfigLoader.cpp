@@ -16,13 +16,13 @@ namespace HTStack {
         if (!inputStream) {
             throw std::runtime_error ("Unable to open app config path for reading");
         }
-        inputStream.exceptions (std::ios_base::failbit | std::ios_base::badbit);
+        inputStream.exceptions (std::ios_base::badbit);
         while (true) { // Iterating over all applications
-            if (inputStream.eof ()) { // After reading the last application, we're at the end of the file
-                break;
-            }
             std::string appNameWithColon;
             std::getline (inputStream, appNameWithColon);
+            if (inputStream.eof () || inputStream.bad ()) { // After reading the last application, we're at the end of the file
+                break;
+            }
             if (appNameWithColon == "") { // Empty line, presumably as spacing
                 continue;
             }
@@ -37,7 +37,7 @@ namespace HTStack {
             while (true) { // Iterating over all configuration lines for this application
                 std::string configLineWithIndent;
                 std::getline (inputStream, configLineWithIndent);
-                if (inputStream.eof ()) { // Reached end-of-file
+                if (inputStream.eof () || inputStream.bad ()) { // Reached end-of-file
                     break;
                 }
                 if (!configLineWithIndent.starts_with (indent)) { // We unindented
@@ -87,8 +87,8 @@ namespace HTStack {
         std::ostream* outputStream;
         std::ofstream realOutputStream (filePath, std::ios::out);
         bool openedProperly;
-        if (!outputStream) {
-            std::cerr << "Unable to open app config path for reading, dumping to stdout and throwing runtime_error" << std::endl;
+        if (!realOutputStream) {
+            std::cerr << "Unable to open app config path for writing, dumping to stdout and throwing runtime_error" << std::endl;
             outputStream = &(std::cout);
             openedProperly = false;
         } else { // don't mess with std::cout's exceptions!
@@ -96,6 +96,7 @@ namespace HTStack {
             outputStream = &realOutputStream;
             openedProperly = true;
         }
+        int appNumber = 1;
         for (AppContainer* app : appLoader.apps) {
             *outputStream << app->name << ":" << std::endl;
             *outputStream << indent << "_location" << keyValueSeparator << app->location << std::endl;
@@ -103,6 +104,9 @@ namespace HTStack {
             for (std::pair <std::string, std::string> settingPair : app->settings) {
                 *outputStream << indent << settingPair.first << keyValueSeparator << settingPair.second << std::endl;
             }
+            if (appNumber != appLoader.apps.size ()) *outputStream << std::endl;
+
+            appNumber += 1;
         }
         if (!openedProperly) {
             throw std::runtime_error ("Unable to open app config path for reading");

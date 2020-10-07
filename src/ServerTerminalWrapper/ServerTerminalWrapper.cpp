@@ -13,15 +13,22 @@ namespace HTStack {
         if (command == "help") {
             std::cout << "Note: Commands marked with (!) can only be run with a config file." << std::endl;
             std::cout << "help: Display this message." << std::endl;
+            std::cout << "list: List names of all apps." << std::endl;
             std::cout << "add [name] [location]: Add app with name name and shared object at location. (!)" << std::endl;
             std::cout << "load [name]: Load app with name name. (!)" << std::endl;
             std::cout << "show [name]: Show information about app with name name." << std::endl;
             std::cout << "configure [name] [key] [value]: Set configuration value of key to value in app with name name. (!)" << std::endl;
             std::cout << "unconfigure [name] [key]: Remove key from configuration of app with name name." << std::endl;
             std::cout << "unload [name]: Unload app with name name. (!)" << std::endl;
+            std::cout << "reload [name]: Reload app with name name. (!)" << std::endl;
             std::cout << "remove [name]: Remove app with name name. (!)" << std::endl;
             std::cout << "exit: Shut down the server." << std::endl;
             return;
+        } else if (command == "list") {
+            if (args.size () == 0) {
+                server.appLoader.list ();
+                return;
+            }
         } else if (command == "add") {
             if (args.size () == 2) {
                 server.appLoader.add (args [0], args [1]);
@@ -32,9 +39,14 @@ namespace HTStack {
                 server.appLoader.load (args [0]);
                 return;
             }
+        } else if (command == "reload") {
+            if (args.size () == 1) {
+                server.appLoader.reload (args [0]);
+                return;
+            }
         } else if (command == "show") {
             if (args.size () == 1) {
-                server.appLoader.load (args [0]);
+                server.appLoader.show (args [0]);
                 return;
             }
         } else if (command == "configure") {
@@ -95,7 +107,7 @@ namespace HTStack {
                     command = line.substr (0, tokenLocation);
                     line = line.substr (tokenLocation + tokenDelimiter.size ());
                 } else {
-                    std::string arg = line.substr (0, tokenLocation + tokenDelimiter.size ());
+                    std::string arg = line.substr (0, tokenLocation);
                     args.push_back (arg);
                     line = line.substr (tokenLocation + tokenDelimiter.size ());
                 }
