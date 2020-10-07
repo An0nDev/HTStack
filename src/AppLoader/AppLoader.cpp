@@ -87,6 +87,9 @@ namespace HTStack {
         _setupTypeCheck ("modify an application's configuration");
         AppContainer* appContainer (_find (appName));
         appContainer->settings [key] = value;
+        if (appContainer->isLoaded) {
+            appContainer->app->handleSettingsUpdate (key);
+        }
         appConfigLoader->save ();
     };
     void AppLoader::unconfigure (std::string const & appName, std::string const & key) {
@@ -97,6 +100,9 @@ namespace HTStack {
             throw std::runtime_error ("Application's configuration does not contain the key " + key);
         }
         appContainer->settings.erase (key);
+        if (appContainer->isLoaded) {
+            appContainer->app->handleSettingsRemove (key);
+        }
         appConfigLoader->save ();
     };
     void AppLoader::unload (std::string const & appName) {

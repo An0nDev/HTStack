@@ -1,5 +1,4 @@
 #pragma once
-#include "../AppLoader/AppContainer.hpp"
 #include "../Server/Server.hpp"
 
 namespace HTStack {
@@ -8,9 +7,12 @@ namespace HTStack {
     class App {
     protected:
         Server & server;
+        std::map <std::string, std::string> & settings;
     public:
-        App (Server & server_);
-        virtual void handleRequest (Request & request) = 0;
-        virtual ~App () {};
+        App (Server & server_, std::map <std::string, std::string> & settings_);
+        virtual void handleSettingsUpdate (std::string const & key);
+        virtual void handleSettingsRemove (std::string const & key);
+        virtual void handleRequest (Request & request);
+        virtual ~App ();
     };
 };

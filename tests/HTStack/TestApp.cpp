@@ -4,7 +4,7 @@
 #include <vector>
 #include "../../src/Response/Response.hpp"
 
-TestApp::TestApp (HTStack::Server & server) : App (server) {
+TestApp::TestApp (HTStack::Server & server, std::map <std::string, std::string> & settings) : App (server, settings) {
     std::cout << "[TA] TestApp called" << std::endl;
 };
 
@@ -36,10 +36,18 @@ void TestApp::handleRequest (HTStack::Request & request) {
     std::cout << "[TA] handleRequest call completed" << std::endl;
 };
 
+void TestApp::handleSettingsUpdate (std::string const & key) {
+    std::cout << "[TA] Setting " << key << " updated to " << settings [key] << "!" << std::endl;
+};
+
+void TestApp::handleSettingsRemove (std::string const & key) {
+    std::cout << "[TA] Setting " << key << " removed!" << std::endl;
+};
+
 TestApp::~TestApp () {
     std::cout << "[TA] ~TestApp called" << std::endl;
 };
 
-extern "C" HTStack::App* factory (HTStack::Server & server) {
-    return new TestApp (server);
+extern "C" HTStack::App* factory (HTStack::Server & server, std::map <std::string, std::string> & settings) {
+    return new TestApp (server, settings);
 };
