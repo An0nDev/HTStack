@@ -13,17 +13,19 @@ I've written a lot of HTTP code using a variety of languages, and one thing I've
 #### How the architecture works
 An architecture in terms of HTStack consists of one server and one or more apps.
 
-A server is an instance of an `HTStack::Server` object in C++ that handles the low-level socket communication and HTTP protocol interpretation. The constructor for the object takes a list of applications that the server should manage. This list, as well as other configuration variables, are provided as an `HTStack::ServerConfiguration` instance.
+A server is an instance of an `HTStack::Server` object in C++ that handles the low-level socket communication and HTTP protocol interpretation. The constructor for the object takes a list of applications that the server should manage. This list, as well as other configuration variables, are provided as an `HTStack::ServerConfiguration` instance. (A method of configuring these variables in a file is a planned feature.)
 
-Each application consists primarily of an object that inherits from an `HTStack::App` object. This object is defined by the developer to have several implementations of virtual functions that are called when various events happen, namely:
-- `void onLoad ()`: called when the application's shared object is loaded into memory
-- `void onRequest (HTStack::Request &)`: called when the server receives a valid HTTP request for the app to handle
-- `void onUnload ()`: called when the application's shared object is unloaded from memory
+Each application consists primarily of an object that inherits from an `HTStack::App` object. This object is defined by the developer to have implementations of virtual functions that are called when various events happen, namely:
+- `MyApp::MyApp (HTStack::Server &)`: called when the application's shared object is loaded into memory
+- `void MyApp::handleRequest (HTStack::Request &)`: called when the server receives a valid HTTP request for the app to handle
+- `MyApp::~MyApp ()`: called when the application's shared object is unloaded from memory
 
-Applications are loaded by default when the server starts up. This behavior can be changed through an `HTStack::ServerConfiguration` variable. Applications will also be able to be loaded and unloaded through the `HTStack::Server` instance.
+given the name of the object inheriting from `HTStack::App` is named `MyApp`.
+
+A configuration file determines whether or not the application is loaded by default when the server starts up. When the server is running, a terminal interface provides a mechanism of changing this behavior. See "How to dynamically configure your app" for more info.
 
 #### How to create an app
-Apps are relatively simple to compile and run. The code for your app should contain a definition for a class that inherits from `HTStack::App` and a single function `extern "C" HTStack::App* factory ()` that returns a pointer to a heap-allocated instance of your class. (The `HTStack::Server` instance takes care of calling `delete` on the pointer.)
+Apps are relatively simple to compile and run. The code for your app should contain a definition for a class that inherits from `HTStack::App` and a single function `extern "C" HTStack::App* factory (HTStack::Server & server)` that returns a pointer to a heap-allocated instance of your class. This function is called to construct your app when it's designated to be loaded, and the virtual destructor is called with `delete` when your app is designated to be unloaded.
 
 Here's a minimal example, adapted from the one in `tests/HTStack`:
 
@@ -37,42 +39,37 @@ Here's a minimal example, adapted from the one in `tests/HTStack`:
 
 class TestApp : public HTStack::App {
 public:
-    TestApp () {
-        // Early construction goes here
-        // WARNING: this->server is not assigned here! (set to nullptr)
+    TestApp (HTStack::Server & server) : App (server) {
+        // construction goes here
     };
-    void onLoad () {
-        // Construction goes here; this->server is now assigned
-    };
-    void onRequest (HTStack::Request & request) {
-        // The request should be responded to using HTStack::Response;
+    void handleRequest (HTStack::Request & request) {
+        // The request should be responded to using HTStack::Response::respondTo;
         // otherwise the connection is closed without any data being sent
     };
-    void onUnload () {
-        // Deconstruction goes here
-    };
     ~TestApp () {
-        // Late deconstruction goes here
+        // Deconstruction goes here
     };
 };
 
-extern "C" HTStack::App* factory () {
-    return new TestApp ();
+extern "C" HTStack::App* factory (HTStack::Server & server) {
+    return new TestApp (server);
 };
 ```
 
 Note that in a real implementation, the declaration and definition of your class and the `factory` function should be placed in .hpp and .cpp files; they're combined here for brevity.
 
-When compiling your code, make sure to use the `-fPIC` and `-shared` flags to make sure you get a shared object file that can then be loaded by `HTStack::Server`, which calls `dlopen` and `dlsym` under the hood. Of course, you'll also need to compile `App/App.cpp`, `Request/Request.cpp`, `Response/Response.cpp`, and any other code from HTStack that you use in your code. HTStack also uses C++17 Features, so specify `-std=c++17` if that's not your compiler's default.
+When compiling your code, make sure to use the `-fPIC` and `-shared` flags to make sure you get a shared object file that can then be loaded by `HTStack::Server`, which calls `dlopen` and `dlsym` under the hood. Of course, you'll also need to compile `App/App.cpp`, `Request/Request.cpp`, `Response/Response.cpp`, and any other code from HTStack that you use in your code. HTStack also uses C++20 Features, so specify `-std=c++2a` when compiling your app if that's not your compiler's default.
 
-Here's a minimal example of a simple compilation script, copied from the one in `tests/HTStack`:
+Here's a minimal example of a simple app compilation script, copied from the one in `tests/HTStack`:
 ```bash
-clang++ \
-    -std=c++17 \
+clang++-11 \
+    -std=c++2a \
     -fPIC -shared \
     $SRC_DIR/App/App.cpp \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/Response/Response.cpp \
+    $SRC_DIR/HTTPUtils/MIMEType.cpp \
+    $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
     TestApp.cpp -o TestApp.so
 ```
 

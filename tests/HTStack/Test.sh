@@ -15,7 +15,6 @@ fi
 clang++-11 \
     -std=c++2a \
     -fPIC -shared \
-    -lssl \
     $SRC_DIR/App/App.cpp \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/Response/Response.cpp \

@@ -25,6 +25,7 @@ namespace HTStack {
             case ServerConfiguration::AppSetupType::FILE: {
                 appConfigLoader = new AppConfigLoader (*this, server.configuration.appConfigPath.value ());
                 appConfigLoader->load ();
+                appConfigLoader->save (); // In case apps fail to load or modify their own configuration
                 break;
             }
         }
