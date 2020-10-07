@@ -14,16 +14,12 @@
 namespace HTStack {
     AppLoader::AppLoader (Server & server_) : server (server_), appConfigLoader (nullptr) {};
     void AppLoader::start () {
-        std::cout << "AppLoader::start called" << std::endl;
         switch (server.configuration.appSetupType) {
             case ServerConfiguration::AppSetupType::INLINE: {
-                std::cout << "Inline setup" << std::endl;
                 for (StaticAppConfig const & appStaticConfig : *(server.configuration.appStaticConfigs)) {
-                    std::cout << "Constructing appContainer for " << appStaticConfig.name << std::endl;
                     AppContainer* appContainer = new AppContainer (server, appStaticConfig.name, appStaticConfig.location, appStaticConfig.settings, appStaticConfig.isLoaded);
                     apps.push_back (appContainer);
                 }
-                std::cout << "Done with inline setup" << std::endl;
                 break;
             }
             case ServerConfiguration::AppSetupType::FILE: {
@@ -62,9 +58,28 @@ namespace HTStack {
         appContainer->load ();
         appConfigLoader->save ();
     };
+    void AppLoader::show (std::string const & appName) {
+        AppContainer* appContainer (_find (appName));
+        std::cout << "Name: " << appContainer->name << std::endl;
+        std::cout << "Location: " << appContainer->location << std::endl;
+        std::cout << "Settings: " << std::endl;
+        for (std::pair <std::string, std::string> configurationPair : appContainer->settings) {
+            std::cout << configurationPair.first << ": " << configurationPair.second << std::endl;
+        };
+    };
     void AppLoader::configure (std::string const & appName, std::string const & key, std::string const & value) {
+        _setupTypeCheck ("modify an application's configuration");
         AppContainer* appContainer (_find (appName));
         appContainer->settings [key] = value;
+        appConfigLoader->save ();
+    };
+    void AppLoader::unconfigure (std::string const & appName, std::string const & key) {
+        _setupTypeCheck ("remove a key from an application's configuration");
+        AppContainer* appContainer (_find (appName));
+        if (!(appContainer->settings.contains (key))) {
+            throw std::runtime_error ("Application's configuration does not contain the key " + key);
+        }
+        appContainer->settings.erase (key);
         appConfigLoader->save ();
     };
     void AppLoader::unload (std::string const & appName) {

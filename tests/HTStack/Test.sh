@@ -9,8 +9,8 @@ if [ ! -f cert.pem ] && [ ! -f key.pem ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout key.pem -out cert.pem
 fi
 
-echo $CFLAGS
-echo $LDFLAGS
+# echo $CFLAGS
+# echo $LDFLAGS
 
 clang++-11 \
     -std=c++2a \
@@ -40,6 +40,7 @@ clang++-11 \
     $SRC_DIR/SocketClientManager/ClientThreadPool.cpp \
     $SRC_DIR/SocketClientManager/SocketClientManager.cpp \
     $SRC_DIR/SocketManager/SocketManager.cpp \
+    $SRC_DIR/ServerTerminalWrapper/ServerTerminalWrapper.cpp \
     $SRC_DIR/Server/Server.cpp \
     $SRC_DIR/App/App.cpp \
     $SRC_DIR/AppConfigLoader/StaticAppConfig.cpp \

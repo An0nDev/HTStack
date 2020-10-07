@@ -9,6 +9,7 @@ namespace HTStack {
     void Server::start () {
         if (isRunning) return;
         ensureAsyncShutdownCompleted ();
+        appLoader.start ();
         socketManager.start ();
         isRunning = true;
     };
@@ -17,6 +18,7 @@ namespace HTStack {
         ensureAsyncShutdownCompleted ();
         isRunning = false;
         socketManager.shutdown ();
+        appLoader.shutdown ();
     };
     void Server::shutdownAsync () {
         ensureAsyncShutdownCompleted ();

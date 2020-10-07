@@ -27,7 +27,9 @@ namespace HTStack {
 
         void add (std::string const & appName, std::string const & appLocation);
         void load (std::string const & appName);
+        void show (std::string const & appName);
         void configure (std::string const & appName, std::string const & key, std::string const & value);
+        void unconfigure (std::string const & appName, std::string const & key);
         void unload (std::string const & appName);
         void remove (std::string const & appName);
         void handleRequest (Request & request);
