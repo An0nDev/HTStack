@@ -46,7 +46,7 @@ namespace HTStack {
     };
     InternalReader::~InternalReader () {
         if (leftoverFromLastCall.size () > 0) {
-            ExceptionUtils::safeThrow (std::runtime_error ("Leftover data in leftoverFromLastCall!"));
+            std::cerr << "Warning from ~HTStack::InternalReader: leftover data in leftoverFromLastCall!" << std::endl;
         }
     }
 };

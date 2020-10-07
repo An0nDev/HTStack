@@ -1,10 +1,16 @@
 #!/bin/bash
 SRC_DIR=../../src
 LD_LIBRARY_PATH=/usr/local/
+CPP10_BASE_DIR=~/Downloads/cpp10/out
+export CFLAGS="-I$CPP10_BASE_DIR/usr/include/ -I$CPP10_BASE_DIR/usr/include/c++/10/"
+export LDFLAGS="-L$CPP10_BASE_DIR/usr/lib/gcc/ -L$CPP10_BASE_DIR/usr/lib/gcc/x86_64-linux-gnu/10/"
 
 if [ ! -f cert.pem ] && [ ! -f key.pem ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout key.pem -out cert.pem
 fi
+
+echo $CFLAGS
+echo $LDFLAGS
 
 clang++-11 \
     -std=c++2a \
