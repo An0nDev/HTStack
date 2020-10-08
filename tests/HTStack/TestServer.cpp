@@ -1,4 +1,5 @@
 #include "TestServer.hpp"
+#include "../../src/ServerConfiguration/ServerConfigLoader.hpp"
 #include "../../src/ServerConfiguration/ServerConfiguration.hpp"
 #include "../../src/Server/Server.hpp"
 #include "../../src/SSL/SSLSetupVars.hpp"
@@ -15,22 +16,11 @@
 #include <optional>
 
 int main () {
+    /*
     HTStack::ServerConfiguration serverConfiguration (
-        /*
-        HTStack::ServerConfiguration::AppSetupType::INLINE, // appSetupType
-        std::vector <HTStack::StaticAppConfig> ({
-            HTStack::StaticAppConfig (
-                "TestApp", // name
-                "TestApp.so", // location
-                std::map <std::string, std::string> (), // settings
-                true // isLoaded
-            )
-        }), // appStaticConfigs
-        std::nullopt, // appConfigPath
-        */
         HTStack::ServerConfiguration::AppSetupType::FILE, // appSetupType
         std::nullopt, // appStaticConfigs
-        std::string ("TestConfig.cfg"), // appConfigPath
+        std::string ("TestAppConfig.cfg"), // appConfigPath
         true, // autoStart
         "0.0.0.0", // ip
         8080, // port
@@ -45,6 +35,8 @@ int main () {
             SSL_FILETYPE_PEM // keyFileType
         ) // ssl
     );
+    */
+    HTStack::ServerConfiguration serverConfiguration = HTStack::ServerConfigLoader::load ("TestServerConfig.cfg");
     std::cout << "[TS] Starting up server..." << std::endl;
     {
         HTStack::Server server (serverConfiguration);

@@ -50,6 +50,7 @@ clang++-11 \
     $SRC_DIR/RequestReader/RequestReader.cpp \
     $SRC_DIR/Response/Response.cpp \
     $SRC_DIR/Request/Request.cpp \
+    $SRC_DIR/ServerConfiguration/ServerConfigLoader.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
     TestServer.cpp -o TestServer \
     && LD_LIBRARY_PATH=. ./TestServer
