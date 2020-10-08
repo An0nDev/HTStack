@@ -2,10 +2,11 @@
 SRC_DIR=../src
 LD_LIBRARY_PATH=/usr/local/
 CPP10_BASE_DIR=~/Downloads/cpp10/out
+if [ -z "$COMPILER" ]; then COMPILER=clang++-11; fi
 export CFLAGS="-I$CPP10_BASE_DIR/usr/include/ -I$CPP10_BASE_DIR/usr/include/c++/10/"
 export LDFLAGS="-L$CPP10_BASE_DIR/usr/lib/gcc/ -L$CPP10_BASE_DIR/usr/lib/gcc/x86_64-linux-gnu/10/"
 
-clang++-11 \
+$COMPILER \
     -std=c++2a \
     -ldl \
     -lpthread \
