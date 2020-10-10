@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <map>
+#include <optional>
+#include <filesystem>
 
 namespace HTStack {
     class App;
@@ -14,6 +16,7 @@ namespace HTStack {
     public:
         std::string name;
         std::string location;
+        std::optional <std::string> locationDirectory;
         std::map <std::string, std::string> settings;
         bool isLoaded = false;
         App* app = nullptr;
@@ -25,6 +28,7 @@ namespace HTStack {
             bool const & isLoaded_
         );
         void load ();
+        void moveIntoDirectory ();
         void unload ();
         ~AppContainer ();
     };

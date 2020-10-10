@@ -106,6 +106,7 @@ namespace HTStack {
         if (hasData) {
             int contentLength;
             if (streamed) {
+                if (!inputStream) throw std::runtime_error ("HTStack::Response has a bad input stream!");
                 inputStream->seekg (0, std::istream::end);
                 contentLength = inputStream->tellg ();
                 inputStream->seekg (0, std::istream::beg);

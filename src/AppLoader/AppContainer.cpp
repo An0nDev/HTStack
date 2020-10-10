@@ -1,6 +1,7 @@
 #include "AppContainer.hpp"
 #include "../CInteropUtils/CInteropUtils.hpp"
 #include "dlfcn.h"
+#include <unistd.h>
 #include "../App/App.hpp"
 
 namespace HTStack {
@@ -11,6 +12,10 @@ namespace HTStack {
         std::map <std::string, std::string> const & settings_,
         bool const & isLoaded_
     ) : server (server_), name (name_), location (location_), settings (settings_) {
+        std::filesystem::path locationDirectoryPath = std::filesystem::path (location).parent_path ();
+        if (!locationDirectoryPath.empty ()) {
+            locationDirectory = locationDirectoryPath.string ();
+        }
         if (isLoaded_) load ();
     };
     void AppContainer::load () {
@@ -33,6 +38,12 @@ namespace HTStack {
         AppFactory factory = reinterpret_cast <AppFactory> (factoryVoidPointer);
         app = factory (server, settings);
         isLoaded = true;
+    };
+    void AppContainer::moveIntoDirectory () {
+        if (locationDirectory.has_value ()) {
+            int chdirReturnValue = chdir (locationDirectory.value ().c_str ());
+            CInteropUtils::systemErrorCheck ("chdir ()", chdirReturnValue);
+        }
     };
     void AppContainer::unload () {
         if (!isLoaded) {

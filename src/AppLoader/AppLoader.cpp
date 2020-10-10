@@ -147,6 +147,7 @@ namespace HTStack {
             if (!appContainer->isLoaded) {
                 continue;
             }
+            appContainer->moveIntoDirectory ();
             App* app = appContainer->app;
             app->handleRequest (request);
             if (request.complete) {
