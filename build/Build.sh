@@ -40,11 +40,18 @@ $COMPILER \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfigLoader.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
-    -o ../dist/LibHTStack.so
+    -o ../dist/libHTStack.so
+
+sudo cp ../dist/libHTStack.so /usr/local/lib/
+
+sudo ldconfig
 
 $COMPILER \
     -std=c++2a \
-    ../dist/LibHTStack.so \
-    HTStackServer.cpp -o ../dist/HTStackServer
+    HTStackServer.cpp \
+    -o ../dist/HTStackServer \
+    -lHTStack
+
+sudo cp ../dist/HTStackServer /usr/local/bin/
 
 cd $OLDPWD
