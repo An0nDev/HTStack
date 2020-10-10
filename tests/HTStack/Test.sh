@@ -12,21 +12,13 @@ fi
 # echo $CFLAGS
 # echo $LDFLAGS
 
-clang++-11 \
-    -std=c++2a \
-    -fPIC -shared \
-    $SRC_DIR/App/App.cpp \
-    $SRC_DIR/Request/Request.cpp \
-    $SRC_DIR/Response/Response.cpp \
-    $SRC_DIR/HTTPUtils/MIMEType.cpp \
-    $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
-    TestApp.cpp -o TestApp.so
-
+START=$SECONDS
 clang++-11 \
     -std=c++2a \
     -ldl \
     -lpthread \
     -lssl -lcrypto \
+    -fPIC -shared \
     $SRC_DIR/ExceptionUtils/ExceptionUtils.cpp \
     $SRC_DIR/SSL/SSLSetupVars.cpp \
     $SRC_DIR/HTTPUtils/MIMEType.cpp \
@@ -52,5 +44,24 @@ clang++-11 \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfigLoader.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
-    TestServer.cpp -o TestServer \
-    && LD_LIBRARY_PATH=. ./TestServer
+    -o LibHTStack.so
+END=$SECONDS
+echo Time to build LibHTStack: $(($END - $START)) seconds
+
+START=$SECONDS
+clang++-11 \
+    -std=c++2a \
+    -fPIC -shared \
+    LibHTStack.so \
+    TestApp.cpp -o TestApp.so
+END=$SECONDS
+echo Time to build TestApp: $(($END - $START)) seconds
+
+START=$SECONDS
+clang++-11 \
+    -std=c++2a \
+    LibHTStack.so \
+    TestServer.cpp -o TestServer
+END=$SECONDS
+echo Time to build TestServer: $(($END - $START)) seconds
+LD_LIBRARY_PATH=. ./TestServer

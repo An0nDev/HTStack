@@ -1,4 +1,7 @@
 #!/bin/bash
+
+cd $(dirname "$0")
+
 SRC_DIR=../src
 LD_LIBRARY_PATH=/usr/local/
 CPP10_BASE_DIR=~/Downloads/cpp10/out
@@ -11,6 +14,7 @@ $COMPILER \
     -ldl \
     -lpthread \
     -lssl -lcrypto \
+    -fPIC -shared \
     $SRC_DIR/ExceptionUtils/ExceptionUtils.cpp \
     $SRC_DIR/SSL/SSLSetupVars.cpp \
     $SRC_DIR/HTTPUtils/MIMEType.cpp \
@@ -36,4 +40,11 @@ $COMPILER \
     $SRC_DIR/Request/Request.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfigLoader.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
+    -o ../dist/LibHTStack.so
+
+$COMPILER \
+    -std=c++2a \
+    ../dist/LibHTStack.so \
     HTStackServer.cpp -o ../dist/HTStackServer
+
+cd $OLDPWD
