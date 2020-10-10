@@ -8,6 +8,7 @@
 #include "../App/App.hpp"
 #include <exception>
 #include <stdexcept>
+#include <filesystem>
 
 #include <iostream> // debug
 
@@ -147,9 +148,15 @@ namespace HTStack {
             if (!appContainer->isLoaded) {
                 continue;
             }
-            appContainer->moveIntoDirectory ();
+            bool changingDirs = appContainer->locationDirectory.has_value ();
+            std::filesystem::path oldPath;
+            if (changingDirs) {
+                oldPath = std::filesystem::current_path ();
+                std::filesystem::current_path (appContainer->locationDirectory.value ());
+            }
             App* app = appContainer->app;
             app->handleRequest (request);
+            if (changingDirs) std::filesystem::current_path (oldPath);
             if (request.complete) {
                 return;
             }

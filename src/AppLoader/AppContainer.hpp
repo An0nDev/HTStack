@@ -16,7 +16,7 @@ namespace HTStack {
     public:
         std::string name;
         std::string location;
-        std::optional <std::string> locationDirectory;
+        std::optional <std::filesystem::path> locationDirectory;
         std::map <std::string, std::string> settings;
         bool isLoaded = false;
         App* app = nullptr;
@@ -28,7 +28,6 @@ namespace HTStack {
             bool const & isLoaded_
         );
         void load ();
-        void moveIntoDirectory ();
         void unload ();
         ~AppContainer ();
     };
