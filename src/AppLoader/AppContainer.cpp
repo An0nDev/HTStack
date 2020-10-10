@@ -12,6 +12,10 @@ namespace HTStack {
         std::map <std::string, std::string> const & settings_,
         bool const & isLoaded_
     ) : server (server_), name (name_), location (location_), settings (settings_) {
+        std::filesystem::path locationRelativePath = std::filesystem::path (location);
+        if (!locationRelativePath.empty ()) {
+            location = std::filesystem::absolute (locationRelativePath).string ();
+        }
         std::filesystem::path locationDirectoryRelativePath = std::filesystem::path (location).parent_path ();
         if (!locationDirectoryRelativePath.empty ()) {
             locationDirectory = std::filesystem::absolute (locationDirectoryRelativePath).string ();
