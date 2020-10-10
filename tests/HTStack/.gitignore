@@ -1,1 +1,4 @@
 *.pem
+TestServer
+TestApp.so
+LibHTStack.so
