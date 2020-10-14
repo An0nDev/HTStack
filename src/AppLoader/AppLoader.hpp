@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../AppConfigLoader/AppConfigLoader.hpp"
+#include "../ThreadingUtils/Event.hpp"
 
 #include <vector>
 #include <string>
@@ -17,6 +18,20 @@ namespace HTStack {
         std::vector <AppContainer*> apps;
         AppConfigLoader* appConfigLoader;
         std::mutex appAccessLock;
+
+        std::mutex requestHandlerCountLock;
+        int requestHandlerCount;
+        Event readyToHandleNewRequestsEvent;
+        Event noRequestsBeingHandledEvent;
+        class RequestPauser {
+        private:
+            AppLoader & appLoader;
+        public:
+            RequestPauser (AppLoader & appLoader_);
+            ~RequestPauser ();
+        };
+        friend RequestPauser::RequestPauser (AppLoader & appLoader_);
+        friend RequestPauser::~RequestPauser ();
 
         void _setupTypeCheck (std::string const & operation);
         AppContainer* _find (std::string const & appName);

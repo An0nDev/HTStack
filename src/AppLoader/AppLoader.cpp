@@ -30,6 +30,15 @@ namespace HTStack {
                 break;
             }
         }
+        readyToHandleNewRequestsEvent.set ();
+        noRequestsBeingHandledEvent.set ();
+    };
+    AppLoader::RequestPauser::RequestPauser (AppLoader & appLoader_) : appLoader (appLoader_) {
+        appLoader.readyToHandleNewRequestsEvent.clear ();
+        appLoader.noRequestsBeingHandledEvent.wait ();
+    };
+    AppLoader::RequestPauser::~RequestPauser () {
+        appLoader.readyToHandleNewRequestsEvent.set ();
     };
     void AppLoader::_setupTypeCheck (std::string const & operation) {
         if (server.configuration.appSetupType == ServerConfiguration::AppSetupType::INLINE) {
@@ -45,7 +54,7 @@ namespace HTStack {
         throw std::runtime_error ("Could not find app with name " + appName);
     };
     void AppLoader::list () {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         std::string list_;
         for (AppContainer* appContainer : apps) {
             list_ += appContainer->name;
@@ -55,7 +64,7 @@ namespace HTStack {
         std::cout << "Apps: " << list_ << std::endl;
     };
     void AppLoader::add (std::string const & appName, std::string const & appLocation) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("add an application");
         // Make a new app; defaults to empty config and unloaded
         AppContainer* appContainer = new AppContainer (server, appName, appLocation, std::map <std::string, std::string> (), false);
@@ -63,7 +72,7 @@ namespace HTStack {
         appConfigLoader->save ();
     };
     void AppLoader::load (std::string const & appName) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("load an unloaded application");
         AppContainer* appContainer (_find (appName));
         if (appContainer->isLoaded) {
@@ -73,7 +82,7 @@ namespace HTStack {
         appConfigLoader->save ();
     };
     void AppLoader::show (std::string const & appName) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         AppContainer* appContainer (_find (appName));
         std::cout << "Name: " << appContainer->name << std::endl;
         std::cout << "Location: " << appContainer->location << std::endl;
@@ -84,7 +93,7 @@ namespace HTStack {
         };
     };
     void AppLoader::configure (std::string const & appName, std::string const & key, std::string const & value) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("modify an application's configuration");
         AppContainer* appContainer (_find (appName));
         appContainer->settings [key] = value;
@@ -94,7 +103,7 @@ namespace HTStack {
         appConfigLoader->save ();
     };
     void AppLoader::unconfigure (std::string const & appName, std::string const & key) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("remove a key from an application's configuration");
         AppContainer* appContainer (_find (appName));
         if (!(appContainer->settings.contains (key))) {
@@ -107,7 +116,7 @@ namespace HTStack {
         appConfigLoader->save ();
     };
     void AppLoader::unload (std::string const & appName) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("unload a loaded application");
         AppContainer* appContainer (_find (appName));
         if (!appContainer->isLoaded) {
@@ -117,7 +126,7 @@ namespace HTStack {
         appConfigLoader->save ();
     };
     void AppLoader::reload (std::string const & appName) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("reload an application");
         AppContainer* appContainer (_find (appName));
         if (appContainer->isLoaded) {
@@ -127,7 +136,7 @@ namespace HTStack {
         appConfigLoader->save ();
     };
     void AppLoader::remove (std::string const & appName) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        AppLoader::RequestPauser guard (*this);
         _setupTypeCheck ("remove an application");
         int appIndex = 0;
         std::vector <AppContainer*>::iterator removeTarget (apps.begin ());
@@ -143,7 +152,13 @@ namespace HTStack {
         throw std::runtime_error ("Could not find app with name " + appName);
     };
     void AppLoader::handleRequest (Request & request) {
-        std::lock_guard <std::mutex> guard (appAccessLock);
+        readyToHandleNewRequestsEvent.wait ();
+
+        {
+            std::lock_guard <std::mutex> requestHandlerCountGuard (requestHandlerCountLock);
+            requestHandlerCount += 1;
+        }
+
         for (AppContainer* appContainer : apps) {
             if (!appContainer->isLoaded) {
                 continue;
@@ -161,6 +176,12 @@ namespace HTStack {
                 return;
             }
         };
+
+        {
+            std::lock_guard <std::mutex> requestHandlerCountGuard (requestHandlerCountLock);
+            requestHandlerCount -= 1;
+            if (requestHandlerCount == 0) noRequestsBeingHandledEvent.set ();
+        }
     };
     void AppLoader::shutdown () {
         if (appConfigLoader != nullptr) {

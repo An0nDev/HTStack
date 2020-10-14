@@ -23,6 +23,7 @@ clang++-11 \
     $SRC_DIR/SSL/SSLSetupVars.cpp \
     $SRC_DIR/HTTPUtils/MIMEType.cpp \
     $SRC_DIR/CInteropUtils/CInteropUtils.cpp \
+    $SRC_DIR/ThreadingUtils/Event.cpp \
     $SRC_DIR/ClientSocket/SSLClientWrapper.cpp \
     $SRC_DIR/ClientSocket/SSLSocket.cpp \
     $SRC_DIR/ClientSocket/ClientSocket.cpp \
