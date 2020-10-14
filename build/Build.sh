@@ -54,4 +54,8 @@ $COMPILER \
 
 sudo cp ../dist/HTStackServer /usr/local/bin/
 
+sudo rm -rdf /usr/local/include/HTStack/
+sudo mkdir -p /usr/local/include/HTStack/
+sudo cp -r ../src/* /usr/local/include/HTStack/
+
 cd $OLDPWD
