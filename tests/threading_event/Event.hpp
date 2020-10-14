@@ -5,10 +5,9 @@
 
 class Event {
 private:
-    std::mutex isSetLock;
     bool isSet_ = false;
-    std::mutex setTriggerLock;
-    std::condition_variable setTrigger;
+    std::mutex lock;
+    std::condition_variable trigger;
 public:
     bool isSet ();
     void set ();

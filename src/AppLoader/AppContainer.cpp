@@ -36,7 +36,13 @@ namespace HTStack {
             throw std::logic_error ("Error when finding factory function in dynamic library at " + location + ": " + error);
         }
         AppFactory factory = reinterpret_cast <AppFactory> (factoryVoidPointer);
-        app = factory (server, settings);
+
+        try {
+            app = factory (server, settings);
+        } catch (std::exception & exception) {
+            dlclose (handle);
+            throw exception;
+        }
         isLoaded = true;
     };
     void AppContainer::unload () {

@@ -1,28 +1,24 @@
 #include "Event.hpp"
 
 bool Event::isSet () {
-    isSetLock.lock ();
-    bool isSetRet (isSet_);
-    isSetLock.unlock ();
-    return isSetRet;
+    std::lock_guard <std::mutex> lockGuard (lock);
+    return isSet_;
 };
 
 void Event::set () {
-    isSetLock.lock ();
+    std::lock_guard <std::mutex> lockGuard (lock);
     isSet_ = true;
-    isSetLock.unlock ();
-    setTrigger.notify_all ();
+    trigger.notify_all ();
 };
 
 void Event::clear () {
-    isSetLock.lock ();
+    std::lock_guard <std::mutex> lockGuard (lock);
     isSet_ = false;
-    isSetLock.unlock ();
 };
 
 void Event::wait () {
-    if (!isSet ()) {
-        std::unique_lock <std::mutex> setTriggerUniqueLock (setTriggerLock);
-        setTrigger.wait (setTriggerUniqueLock);
+    while (!isSet ()) {
+        std::unique_lock <std::mutex> uniqueLock (lock);
+        trigger.wait (uniqueLock);
     }
 };
