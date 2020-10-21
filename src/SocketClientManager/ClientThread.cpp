@@ -44,13 +44,12 @@ namespace HTStack {
         try {
             Request request = server.requestReader.readFrom (task.clientSocket);
             server.appLoader.handleRequest (request);
-
-            delete task.clientSocket;
         } catch (std::runtime_error const & exception) {
             std::cerr << "Caught non-fatal runtime error: " << exception.what () << std::endl;
         } catch (std::system_error const & exception) {
             std::cerr << "Caught non-fatal system error: " << exception.what () << std::endl;
         }
+        delete task.clientSocket;
     };
     ClientThread::ClientThread (Server & server_, std::condition_variable & readyTrigger_) : server (server_), canAccept_ (true), stopped (false), readyTrigger (readyTrigger_), thread (
         new std::thread (&ClientThread::func, this)
