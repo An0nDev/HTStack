@@ -19,8 +19,8 @@ void TestApp::handleRequest (HTStack::Request & request) {
         std::cout << "[TA] Header " << header.first << " has value " << header.second << std::endl;
     }
     if (request.path == "/") {
-        std::ifstream testFileStream ("Test.txt", std::ifstream::binary);
-        HTStack::MIMEType mimeType ("Test.txt", true); // guess
+        std::ifstream testFileStream ("Test.html", std::ifstream::binary);
+        HTStack::MIMEType mimeType ("Test.html", true); // guess
         HTStack::Response response (200, &testFileStream, &mimeType); // 200 = OK
         response.respondTo (request);
     } else if (request.path == "/logo") {
