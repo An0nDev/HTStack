@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 SRC_DIR=../../src
 LD_LIBRARY_PATH=/usr/local/
 CPP10_BASE_DIR=~/Downloads/cpp10/out
@@ -43,6 +46,8 @@ clang++-11 \
     $SRC_DIR/RequestReader/RequestReader.cpp \
     $SRC_DIR/Response/Response.cpp \
     $SRC_DIR/Request/Request.cpp \
+    $SRC_DIR/WebSockets/Client.cpp \
+    $SRC_DIR/WebSockets/Checker.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfigLoader.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
     -o LibHTStack.so

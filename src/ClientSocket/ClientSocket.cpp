@@ -3,6 +3,7 @@
 
 #include <sys/socket.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace HTStack {
     ClientSocket::ClientSocket (int const & fd_, sockaddr_in const & address_) : fd (fd_), address (address_) {};
@@ -19,9 +20,17 @@ namespace HTStack {
     };
     ClientSocket::~ClientSocket () {
         int shutdownReturnValue = shutdown (fd, SHUT_RDWR);
-        CInteropUtils::systemErrorCheck ("shutdown ()", shutdownReturnValue);
+        try {
+            CInteropUtils::systemErrorCheck ("shutdown ()", shutdownReturnValue);
+        } catch (std::system_error const & exception) {
+            std::cerr << "Caught non-fatal system error: " << exception.what () << std::endl;
+        }
 
         int closeReturnValue = close (fd);
-        CInteropUtils::systemErrorCheck ("close ()", closeReturnValue);
+        try {
+            CInteropUtils::systemErrorCheck ("close ()", closeReturnValue);
+        } catch (std::system_error const & exception) {
+            std::cerr << "Caught non-fatal system error: " << exception.what () << std::endl;
+        }
     };
 };

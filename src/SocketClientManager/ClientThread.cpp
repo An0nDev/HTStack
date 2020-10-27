@@ -1,6 +1,8 @@
 #include "ClientThread.hpp"
 #include "../CInteropUtils/CInteropUtils.hpp"
 #include "../Server/Server.hpp"
+#include "../WebSockets/Checker.hpp"
+#include "../WebSockets/Client.hpp"
 #include <iostream>
 #include <optional>
 #include <unistd.h>
@@ -43,7 +45,13 @@ namespace HTStack {
     void ClientThread::executeTask_ (ClientThreadTask const & task) {
         try {
             Request request = server.requestReader.readFrom (task.clientSocket);
-            server.appLoader.handleRequest (request);
+            std::optional <WebSockets::Client> webSocketClient = server.webSocketChecker.check (request);
+            if (webSocketClient.has_value ()) {
+                std::cout << "do shit with web socket client now" << std::endl;
+            }
+            if (!request.complete) {
+                server.appLoader.handleRequest (request);
+            }
         } catch (std::runtime_error const & exception) {
             std::cerr << "Caught non-fatal runtime error: " << exception.what () << std::endl;
         } catch (std::system_error const & exception) {

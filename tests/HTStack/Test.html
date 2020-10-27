@@ -4,7 +4,15 @@
         <script>
             window.addEventListener ("load", windowLoadEvent => {
                 document.querySelector ("button").addEventListener ("click", buttonClickEvent => {
-                    alert ("(TODO)");
+                    const socket = new WebSocket ("wss://" + window.location.host);
+                    for (var eventName of ["close", "error", "message", "open"]) {
+                        socket.addEventListener (eventName, event => {
+                            console.log (event);
+                            var element = document.createElement ("p");
+                            element.innerText = event.type + ": " + JSON.stringify (event);
+                            document.body.appendChild (element);
+                        });
+                    }
                 });
             });
         </script>

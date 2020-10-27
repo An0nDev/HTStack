@@ -1,3 +1,7 @@
+#pragma once
+
+#include "../ClientSocket/ClientSocket.hpp"
+
 namespace HTStack::WebSockets {
     class Client {
     private:

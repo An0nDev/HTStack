@@ -155,8 +155,9 @@ namespace HTStack {
     : statusCode (statusCode_), data (data_), hasData (true), streamed (false), inputStream (nullptr), hasMimeType (true), ownsMimeType (true), mimeType (new MIMEType ("application/octet-stream", false)) {};
     Response::Response (int const & statusCode_, std::istream* inputStream_, MIMEType* mimeType_)
     : statusCode (statusCode_), hasData (true), streamed (true), inputStream (inputStream_), hasMimeType (true), ownsMimeType (false), mimeType (mimeType_) {};
-    void Response::respondTo (Request const & request) {
+    void Response::respondTo (Request & request) {
         sendTo (request.clientSocket, request.server.configuration.streamedResponseBufferSize);
+        request.complete = true;
     };
     Response::~Response () {
         if (hasData && hasMimeType && ownsMimeType) delete mimeType;

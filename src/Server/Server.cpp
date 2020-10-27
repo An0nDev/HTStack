@@ -5,7 +5,7 @@
 
 namespace HTStack {
     Server::Server (ServerConfiguration const & configuration_)
-    : configuration (configuration_), appLoader (*this), requestReader (*this), socketManager (*this) {};
+    : configuration (configuration_), appLoader (*this), requestReader (*this), socketManager (*this), webSocketChecker () {};
     void Server::start () {
         if (isRunning) return;
         ensureAsyncShutdownCompleted ();

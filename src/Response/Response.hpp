@@ -34,7 +34,7 @@ namespace HTStack {
         explicit Response (int const & statusCode_, std::string const & text);
         explicit Response (int const & statusCode_, std::vector <char> const & data_);
         explicit Response (int const & statusCode_, std::istream* inputStream_, MIMEType* mimeType_);
-        void respondTo (Request const & request);
+        void respondTo (Request & request);
         ~Response ();
     };
 };

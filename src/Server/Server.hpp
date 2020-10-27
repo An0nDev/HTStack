@@ -4,6 +4,7 @@
 #include "../AppLoader/AppLoader.hpp"
 #include "../RequestReader/RequestReader.hpp"
 #include "../SocketManager/SocketManager.hpp"
+#include "../WebSockets/Checker.hpp"
 
 namespace HTStack {
     class ServerConfiguration;
@@ -18,6 +19,7 @@ namespace HTStack {
         AppLoader appLoader;
         RequestReader requestReader;
         SocketManager socketManager;
+        WebSockets::Checker webSocketChecker;
         explicit Server (ServerConfiguration const & configuration_);
         void start ();
         void shutdown ();
