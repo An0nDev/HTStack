@@ -12,11 +12,13 @@ if [ ! -f cert.pem ] && [ ! -f key.pem ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout key.pem -out cert.pem
 fi
 
+if [ -z "$COMPILER" ]; then COMPILER=clang++-11; fi
+
 # echo $CFLAGS
 # echo $LDFLAGS
 
 START=$SECONDS
-clang++-11 \
+$COMPILER \
     -std=c++2a \
     -ldl \
     -lpthread \
@@ -55,7 +57,7 @@ END=$SECONDS
 echo Time to build LibHTStack: $(($END - $START)) seconds
 
 START=$SECONDS
-clang++-11 \
+$COMPILER \
     -std=c++2a \
     -fPIC -shared \
     LibHTStack.so \
@@ -64,7 +66,7 @@ END=$SECONDS
 echo Time to build TestApp: $(($END - $START)) seconds
 
 START=$SECONDS
-clang++-11 \
+$COMPILER \
     -std=c++2a \
     LibHTStack.so \
     TestServer.cpp -o TestServer
