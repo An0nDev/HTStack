@@ -12,13 +12,13 @@ namespace HTStack {
         sslClient.set_fd (fd);
         sslClient.accept ();
     };
-    std::vector <char> SSLSocket::read (int const & maxSize) {
-        char buffer [maxSize];
+    std::vector <unsigned char> SSLSocket::read (int const & maxSize) {
+        unsigned char buffer [maxSize];
         size_t readBytes;
         sslClient.read_ex (&buffer, maxSize, &readBytes);
-        return std::vector <char> (buffer, buffer + readBytes);
+        return std::vector <unsigned char> (buffer, buffer + readBytes);
     };
-    void SSLSocket::write (std::vector <char> const & data) {
+    void SSLSocket::write (std::vector <unsigned char> const & data) {
         sslClient.write ((void*) data.data (), data.size ());
     };
     SSLSocket::~SSLSocket () {

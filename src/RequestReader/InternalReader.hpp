@@ -13,10 +13,10 @@ namespace HTStack {
         std::vector <char> leftoverFromLastCall;
         Server const & server;
         ClientSocket* const & clientSocket;
-        std::vector <char> recv ();
+        std::vector <unsigned char> recv ();
     public:
         InternalReader (Server const & server_, ClientSocket* const & clientSocket_);
-        std::optional <std::vector <char>> recvData (int const & length);
+        std::optional <std::vector <unsigned char>> recvData (int const & length);
         std::string recvTextUntil (std::string const & endPattern);
         ~InternalReader ();
     };

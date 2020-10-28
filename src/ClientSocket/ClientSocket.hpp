@@ -12,8 +12,8 @@ namespace HTStack {
     public:
         bool keepOpen = false;
         ClientSocket (int const & fd_, sockaddr_in const & address_);
-        virtual std::vector <char> read (int const & maxSize);
-        virtual void write (std::vector <char> const & data);
+        virtual std::vector <unsigned char> read (int const & maxSize);
+        virtual void write (std::vector <unsigned char> const & data);
         virtual ~ClientSocket ();
     };
 };

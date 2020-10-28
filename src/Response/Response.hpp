@@ -23,7 +23,7 @@ namespace HTStack {
         int statusCode;
         std::map <std::string, std::string> headers;
         bool hasData;
-        std::vector <char> data;
+        std::vector <unsigned char> data;
         bool streamed;
         std::istream* inputStream;
         bool hasMimeType;
@@ -32,7 +32,7 @@ namespace HTStack {
         explicit Response (int const & statusCode_);
         explicit Response (int const & statusCode_, std::map <std::string, std::string> const & headers_);
         explicit Response (int const & statusCode_, std::string const & text);
-        explicit Response (int const & statusCode_, std::vector <char> const & data_);
+        explicit Response (int const & statusCode_, std::vector <unsigned char> const & data_);
         explicit Response (int const & statusCode_, std::istream* inputStream_, MIMEType* mimeType_);
         void respondTo (Request & request);
         ~Response ();

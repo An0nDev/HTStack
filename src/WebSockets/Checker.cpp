@@ -32,7 +32,7 @@ namespace HTStack::WebSockets {
         EVP_EncodeBlock (derivedHashBase64Bytes, derivedHashRawBytes, SHA_DIGEST_LENGTH);
         return std::string ((char*) derivedHashBase64Bytes);
     };
-    std::optional <Client> Checker::check (Request & request) {
+    std::optional <WebSocket*> Checker::check (Request & request) {
         if (! (
             request.method == Request::Method::GET &&
             request.headers.contains ("Upgrade") &&
@@ -63,6 +63,6 @@ namespace HTStack::WebSockets {
         response.headers ["Connection"] = "Upgrade";
         response.headers ["Sec-WebSocket-Accept"] = derivedKey;
         response.respondTo (request);
-        return std::nullopt;
+        return new WebSocket (request.clientSocket);
     };
 };

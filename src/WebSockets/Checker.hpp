@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Client.hpp"
+#include "WebSocket.hpp"
 #include "../Request/Request.hpp"
 #include <optional>
 
@@ -11,6 +11,6 @@ namespace HTStack::WebSockets {
         static const unsigned int sha1HashBase64CharacterArrayLength;
         std::string deriveKey (std::string const & clientKey);
     public:
-        std::optional <Client> check (Request & request);
+        std::optional <WebSocket*> check (Request & request);
     };
 };

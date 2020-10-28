@@ -31,8 +31,10 @@ namespace HTStack::WebSockets {
     void Manager::start () {
         cleanupThread = new std::thread (&Manager::cleanupFunc, this);
     };
-    void Manager::handle (Request & request) {
-        new std::thread (&ClientThread::func, this)
+    void Manager::handle (WebSocket* const & webSocket) {
+        std::lock_guard <std::mutex> threadsLockGuard (threadsLock);
+        ClientThread* thread = new ClientThread (webSocket);
+        threads.push_back (thread);
     };
     void Manager::shutdown () {
         // trigger shit

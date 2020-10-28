@@ -11,8 +11,8 @@ namespace HTStack {
         SSLClientWrapper sslClient;
     public:
         SSLSocket (int const & clientSocketFileDescriptor, sockaddr_in const & clientSocketAddress, SSL_CTX* const & sslServer);
-        std::vector <char> read (int const & maxSize);
-        void write (std::vector <char> const & data);
+        std::vector <unsigned char> read (int const & maxSize);
+        void write (std::vector <unsigned char> const & data);
         ~SSLSocket ();
     };
 };

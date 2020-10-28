@@ -124,16 +124,16 @@ namespace HTStack {
 
         if (hasData) {
             if (streamed) {
-                char* inputStreamBuffer = new char [streamedResponseBufferSize];
+                unsigned char* inputStreamBuffer = new unsigned char [streamedResponseBufferSize];
                 while (!inputStream->eof ()) {
-                    inputStream->read (inputStreamBuffer, streamedResponseBufferSize);
+                    inputStream->read (/* stoopid */ (char*) inputStreamBuffer, streamedResponseBufferSize);
                     int readBytesCount;
                     if (inputStream->eof ()) {
                         readBytesCount = inputStream->gcount ();
                     } else {
                         readBytesCount = streamedResponseBufferSize;
                     }
-                    clientSocket->write (std::vector <char> (inputStreamBuffer, inputStreamBuffer + readBytesCount));
+                    clientSocket->write (std::vector <unsigned char> (inputStreamBuffer, inputStreamBuffer + readBytesCount));
                 }
                 delete [] inputStreamBuffer;
             } else {
@@ -142,7 +142,7 @@ namespace HTStack {
         }
     };
     void Response::writeText_ (ClientSocket* const & clientSocket, std::string const & text) {
-        std::vector <char> textVector (text.begin (), text.end ());
+        std::vector <unsigned char> textVector (text.begin (), text.end ());
         clientSocket->write (textVector);
     };
     Response::Response (int const & statusCode_)
@@ -151,7 +151,7 @@ namespace HTStack {
     : statusCode (statusCode_), headers (headers_), hasData (false) {};
     Response::Response (int const & statusCode_, std::string const & text)
     : statusCode (statusCode_), data (text.begin (), text.end ()), hasData (true), streamed (false), inputStream (nullptr), hasMimeType (true), ownsMimeType (true), mimeType (new MIMEType ("application/text", false)) {}
-    Response::Response (int const & statusCode_, std::vector <char> const & data_)
+    Response::Response (int const & statusCode_, std::vector <unsigned char> const & data_)
     : statusCode (statusCode_), data (data_), hasData (true), streamed (false), inputStream (nullptr), hasMimeType (true), ownsMimeType (true), mimeType (new MIMEType ("application/octet-stream", false)) {};
     Response::Response (int const & statusCode_, std::istream* inputStream_, MIMEType* mimeType_)
     : statusCode (statusCode_), hasData (true), streamed (true), inputStream (inputStream_), hasMimeType (true), ownsMimeType (false), mimeType (mimeType_) {};

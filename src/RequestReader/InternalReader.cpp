@@ -14,10 +14,10 @@
 namespace HTStack {
     InternalReader::InternalReader (Server const & server_, ClientSocket* const & clientSocket_)
     : server (server_), clientSocket (clientSocket_) {};
-    std::vector <char> InternalReader::recv () {
+    std::vector <unsigned char> InternalReader::recv () {
         return clientSocket->read (server.configuration.maxRecvSize);
     };
-    std::optional <std::vector <char>> InternalReader::recvData (int const & length) {
+    std::optional <std::vector <unsigned char>> InternalReader::recvData (int const & length) {
         throw std::logic_error ("recvData () not yet implemented");
         return std::nullopt; // make the compiler happy
     };
@@ -30,8 +30,8 @@ namespace HTStack {
             if (patternPosition != std::string::npos) {
                 break; // Match found
             }
-            std::vector <char> receivedData = recv ();
-            std::string receivedString (receivedData.data (), receivedData.size ());
+            std::vector <unsigned char> receivedData = recv ();
+            std::string receivedString (receivedData.begin (), receivedData.end ());
             completeString.append (receivedString);
         }
         size_t patternEndPosition = patternPosition + endPattern.size ();

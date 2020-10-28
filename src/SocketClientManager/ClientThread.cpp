@@ -2,7 +2,7 @@
 #include "../CInteropUtils/CInteropUtils.hpp"
 #include "../Server/Server.hpp"
 #include "../WebSockets/Checker.hpp"
-#include "../WebSockets/Client.hpp"
+#include "../WebSockets/WebSocket.hpp"
 #include <iostream>
 #include <optional>
 #include <unistd.h>
@@ -45,9 +45,9 @@ namespace HTStack {
     void ClientThread::executeTask_ (ClientThreadTask const & task) {
         try {
             Request request = server.requestReader.readFrom (task.clientSocket);
-            std::optional <WebSockets::Client> webSocketClient = server.webSocketChecker.check (request);
-            if (webSocketClient.has_value ()) {
-                std::cout << "do shit with web socket client now" << std::endl;
+            std::optional <WebSockets::WebSocket*> webSocket = server.webSocketChecker.check (request);
+            if (webSocket.has_value ()) {
+                server.webSocketManager.handle (webSocket.value ());
             }
             if (!request.complete) {
                 server.appLoader.handleRequest (request);

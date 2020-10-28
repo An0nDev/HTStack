@@ -48,8 +48,13 @@ $COMPILER \
     $SRC_DIR/RequestReader/RequestReader.cpp \
     $SRC_DIR/Response/Response.cpp \
     $SRC_DIR/Request/Request.cpp \
-    $SRC_DIR/WebSockets/Client.cpp \
     $SRC_DIR/WebSockets/Checker.cpp \
+    $SRC_DIR/WebSockets/ClientThread.cpp \
+    $SRC_DIR/WebSockets/DataFrame.cpp \
+    $SRC_DIR/WebSockets/DataFrameReader.cpp \
+    $SRC_DIR/WebSockets/InternalReader.cpp \
+    $SRC_DIR/WebSockets/Manager.cpp \
+    $SRC_DIR/WebSockets/WebSocket.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfigLoader.cpp \
     $SRC_DIR/ServerConfiguration/ServerConfiguration.cpp \
     -o LibHTStack.so

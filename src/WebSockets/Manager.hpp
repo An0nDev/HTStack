@@ -21,7 +21,7 @@ namespace HTStack::WebSockets {
     public:
         Manager (Server & server_);
         void start ();
-        void handle (Request & request);
+        void handle (WebSocket* const & webSocket);
         void shutdown ();
     };
 };
