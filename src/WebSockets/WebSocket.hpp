@@ -13,7 +13,8 @@ namespace HTStack::WebSockets {
         DataFrame recv_ ();
     public:
         WebSocket (ClientSocket* const & clientSocket_);
-        void send (DataFrame const & dataFrame);
+        /* void send (DataFrame const & dataFrame); */
         void close ();
+        ~WebSocket ();
     };
 };

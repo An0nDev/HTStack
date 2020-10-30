@@ -22,7 +22,7 @@ namespace HTStack::WebSockets {
                         break;
                     }
                     thread->finishedLock.lock ();
-                    removeTarget += 1;
+                    cleanupTarget += 1;
                 }
             }
         };
@@ -33,7 +33,7 @@ namespace HTStack::WebSockets {
     };
     void Manager::handle (WebSocket* const & webSocket) {
         std::lock_guard <std::mutex> threadsLockGuard (threadsLock);
-        ClientThread* thread = new ClientThread (webSocket);
+        ClientThread* thread = new ClientThread (*this, webSocket);
         threads.push_back (thread);
     };
     void Manager::shutdown () {
@@ -42,7 +42,7 @@ namespace HTStack::WebSockets {
         shuttingDown = true;
         shuttingDownLock.unlock ();
         cleanupOrShutdownEvent.set ();
-        cleanupThread.join ();
+        cleanupThread->join ();
         delete cleanupThread;
     };
 };

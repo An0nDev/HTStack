@@ -1,5 +1,6 @@
 #include "DataFrameReader.hpp"
 #include "InternalReader.hpp"
+#include <stdexcept>
 
 namespace HTStack::WebSockets {
     DataFrame DataFrameReader::readFrom (ClientSocket* const & clientSocket) {
@@ -9,32 +10,28 @@ namespace HTStack::WebSockets {
         bool rsv1 = firstByte & 0b01000000;
         bool rsv2 = firstByte & 0b00100000;
         bool rsv3 = firstByte & 0b00010000;
-        DataFrame::OpCode opCode = firstByte & 0b00001111;
+        std::array <bool, 3> rsv = {rsv1, rsv2, rsv3};
+        DataFrame::OpCode opCode = static_cast <DataFrame::OpCode> (firstByte & 0b00001111);
 
         unsigned char secondByte = reader.read (1) [0];
         bool mask = secondByte & 0b10000000;
         if (!mask) throw std::runtime_error ("Unmasked WebSocket frame");
         uint_fast64_t payloadLength = secondByte & 0b01111111;
         if (payloadLength > 125) { // If <=125, that's the length
-        const unsigned char payloadLengthLength;
+            unsigned char payloadLengthLength;
             if (payloadLength == 126) { // 16-bit integer for length
                 payloadLengthLength = 2;
             } else if (payloadLength == 127) { // 64-bit integer for length
                 payloadLengthLength = 8;
-            }
-            std::vector <unsigned char> payloadLengthData = clientSocket->read (payloadLengthLength);
+            } // A 7-bit unsigned field has a max value of 127, so we don't need another case here
+            std::vector <unsigned char> payloadLengthData = reader.read (payloadLengthLength);
             // Network bytes are always big-endian, so MSB comes first
             for (int byteIndex = 0; byteIndex <= (payloadLengthLength - 1); byteIndex++) {
                 payloadLength &= payloadLengthData [byteIndex] << (payloadLengthLength - (byteIndex + 1)) * 8;
             }
         }
-        // Same as before but with a 4-byte integer
-        static const unsigned char fourByteIntegerSize = 4;
-        std::vector <unsigned char> maskingKeyData = reader.read (fourByteIntegerSize);
-        uint_fast32_t maskingKey;
-        for (int byteIndex = 0; byteIndex <= (fourByteIntegerSize - 1); byteIndex++) {
-            maskingKey &= maskingKeyData [byteIndex] << (fourByteIntegerSize - (byteIndex + 1)) * 8;
-        }
+        static const unsigned char maskingKeySize = 4;
+        std::vector <unsigned char> maskingKey = reader.read (maskingKeySize);
         std::vector <unsigned char> maskedPayloadData = reader.read (payloadLength);
         std::vector <unsigned char> payloadData (maskedPayloadData.size ());
         uint_fast64_t maskedPayloadByteIndex = 0;
@@ -42,6 +39,6 @@ namespace HTStack::WebSockets {
             payloadData.push_back (maskedPayloadByte ^ maskingKey [maskedPayloadByteIndex % 4]);
             maskedPayloadByteIndex += 1;
         };
-        
+        return DataFrame (rsv, opCode, payloadData); // ~InternalReader called
     };
 };

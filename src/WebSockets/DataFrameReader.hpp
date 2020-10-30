@@ -4,6 +4,7 @@
 
 namespace HTStack::WebSockets {
     class DataFrameReader {
+    public:
         static DataFrame readFrom (ClientSocket* const & clientSocket);
     };
 };

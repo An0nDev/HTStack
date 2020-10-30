@@ -3,9 +3,11 @@
 #include <array>
 #include <string>
 #include <optional>
+#include <vector>
 
 namespace HTStack::WebSockets {
     class DataFrame {
+    public:
         // We don't actually construct a frame if FIN !== 1,
         // so no need for a field here
 
@@ -37,5 +39,11 @@ namespace HTStack::WebSockets {
             std::string getText ();
             std::vector <unsigned char> getBinary ();
         } data;
+
+        DataFrame (
+            std::array <bool, 3> const & rsv_,
+            OpCode const & opCode_,
+            Data const & data_
+        );
     };
 };

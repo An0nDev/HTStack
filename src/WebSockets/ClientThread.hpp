@@ -19,7 +19,9 @@ namespace HTStack::WebSockets {
         void cleanup_ ();
         std::mutex finishedLock;
         bool finished = false;
+        friend Manager;
     public:
         ClientThread (Manager & manager_, WebSocket* const & webSocket);
+        ~ClientThread ();
     };
 };

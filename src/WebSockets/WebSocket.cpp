@@ -1,6 +1,6 @@
 #include "WebSocket.hpp"
 #include "DataFrameReader.hpp"
-#include "DataFrameWriter.hpp"
+// #include "DataFrameWriter.hpp"
 
 namespace HTStack::WebSockets {
     WebSocket::WebSocket (ClientSocket* const & clientSocket_)
@@ -8,9 +8,11 @@ namespace HTStack::WebSockets {
     DataFrame WebSocket::recv_ () {
         return DataFrameReader::readFrom (clientSocket);
     };
+    /*
     void WebSocket::send (DataFrame const & dataFrame) {
         DataFrameWriter::writeTo (dataFrame, clientSocket);
     };
+    */
     void WebSocket::close () {
         if (!closed) {
             closed = true;

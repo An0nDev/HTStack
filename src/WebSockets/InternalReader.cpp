@@ -8,11 +8,11 @@ namespace HTStack::WebSockets {
     std::vector <unsigned char> InternalReader::read (uint_fast64_t const & length) {
         while (buffer.size () < length) {
             std::vector <unsigned char> newBuffer = clientSocket->read (length - buffer.size ());
-            buffer.insert (buffer.end (), newBuffer.start (), newBuffer.end ());
+            buffer.insert (buffer.end (), newBuffer.begin (), newBuffer.end ());
         };
         std::vector <unsigned char> out;
-        out.insert (out.end (), buffer.start (), buffer.start () + length);
-        buffer.erase (buffer.start (), buffer.start () + length);
+        out.insert (out.end (), buffer.begin (), buffer.begin () + length);
+        buffer.erase (buffer.begin (), buffer.begin () + length);
         return out;
     };
     InternalReader::~InternalReader () {
