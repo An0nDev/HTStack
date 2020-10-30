@@ -12,6 +12,8 @@ namespace HTStack {
 namespace HTStack::WebSockets {
     class Manager {
     private:
+        bool running = false;
+
         Server & server;
         std::mutex threadsLock;
         std::vector <ClientThread*> threads;
@@ -28,5 +30,6 @@ namespace HTStack::WebSockets {
         void start ();
         void handle (WebSocket* const & webSocket);
         void shutdown ();
+        ~Manager ();
     };
 };

@@ -11,6 +11,7 @@ namespace HTStack {
         ensureAsyncShutdownCompleted ();
         appLoader.start ();
         socketManager.start ();
+        webSocketManager.start ();
         isRunning = true;
     };
     void Server::shutdown () {

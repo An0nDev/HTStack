@@ -1,16 +1,21 @@
 #include "DataFrameReader.hpp"
 #include "InternalReader.hpp"
 #include <stdexcept>
+#include <iostream>
 
 namespace HTStack::WebSockets {
     DataFrame DataFrameReader::readFrom (ClientSocket* const & clientSocket) {
+        std::cout << "readFrom called" << std::endl;
         InternalReader reader (clientSocket);
+        std::cout << "reading firstByte" << std::endl;
         unsigned char firstByte = reader.read (1) [0];
+        std::cout << "read first byte: " << +firstByte << std::endl;
         bool fin  = firstByte & 0b10000000;
         bool rsv1 = firstByte & 0b01000000;
         bool rsv2 = firstByte & 0b00100000;
         bool rsv3 = firstByte & 0b00010000;
         std::array <bool, 3> rsv = {rsv1, rsv2, rsv3};
+        std::cout << "rsv is " << rsv1 << rsv2 << rsv3 << std::endl;
         DataFrame::OpCode opCode = static_cast <DataFrame::OpCode> (firstByte & 0b00001111);
 
         unsigned char secondByte = reader.read (1) [0];
@@ -39,6 +44,7 @@ namespace HTStack::WebSockets {
             payloadData.push_back (maskedPayloadByte ^ maskingKey [maskedPayloadByteIndex % 4]);
             maskedPayloadByteIndex += 1;
         };
+        std::cout << "returning DataFrame from readFrom" << std::endl;
         return DataFrame (rsv, opCode, payloadData); // ~InternalReader called
     };
 };

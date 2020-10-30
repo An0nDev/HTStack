@@ -43,21 +43,27 @@ namespace HTStack {
         }
     };
     void ClientThread::executeTask_ (ClientThreadTask const & task) {
+        bool successful = false;
+        bool hasWebSocket = false;
         try {
             Request request = server.requestReader.readFrom (task.clientSocket);
             std::optional <WebSockets::WebSocket*> webSocket = server.webSocketChecker.check (request);
             if (webSocket.has_value ()) {
+                hasWebSocket = true;
                 server.webSocketManager.handle (webSocket.value ());
             }
             if (!request.complete) {
                 server.appLoader.handleRequest (request);
             }
+            successful = true;
         } catch (std::runtime_error const & exception) {
             std::cerr << "Caught non-fatal runtime error: " << exception.what () << std::endl;
         } catch (std::system_error const & exception) {
             std::cerr << "Caught non-fatal system error: " << exception.what () << std::endl;
         }
-        delete task.clientSocket;
+        if (!successful || !hasWebSocket) {
+            delete task.clientSocket;
+        }
     };
     ClientThread::ClientThread (Server & server_, std::condition_variable & readyTrigger_) : server (server_), canAccept_ (true), stopped (false), readyTrigger (readyTrigger_), thread (
         new std::thread (&ClientThread::func, this)

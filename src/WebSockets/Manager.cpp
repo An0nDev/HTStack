@@ -1,9 +1,12 @@
 #include "Manager.hpp"
 
+#include <iostream>
+
 namespace HTStack::WebSockets {
     void Manager::cleanupFunc () {
         while (true) {
             cleanupOrShutdownEvent.wait ();
+            cleanupOrShutdownEvent.clear ();
 
             {
                 std::lock_guard <std::mutex> shuttingDownLockGuard (shuttingDownLock);
@@ -30,6 +33,7 @@ namespace HTStack::WebSockets {
     Manager::Manager (Server & server_) : server (server_) {};
     void Manager::start () {
         cleanupThread = new std::thread (&Manager::cleanupFunc, this);
+        running = true;
     };
     void Manager::handle (WebSocket* const & webSocket) {
         std::lock_guard <std::mutex> threadsLockGuard (threadsLock);
@@ -44,5 +48,9 @@ namespace HTStack::WebSockets {
         cleanupOrShutdownEvent.set ();
         cleanupThread->join ();
         delete cleanupThread;
+        running = false;
+    };
+    Manager::~Manager () {
+        if (running) shutdown ();
     };
 };

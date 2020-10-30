@@ -2,23 +2,80 @@
 <html>
     <head>
         <script>
-            window.addEventListener ("load", windowLoadEvent => {
-                document.querySelector ("button").addEventListener ("click", buttonClickEvent => {
-                    const socket = new WebSocket ("wss://" + window.location.host);
-                    for (var eventName of ["close", "error", "message", "open"]) {
-                        socket.addEventListener (eventName, event => {
-                            console.log (event);
-                            var element = document.createElement ("p");
-                            element.innerText = event.type + ": " + JSON.stringify (event);
-                            document.body.appendChild (element);
-                        });
+            var queryCache = {};
+            function $ (selector) {
+                if (Object.keys (queryCache).includes (selector)) {
+                    return queryCache [selector];
+                } else {
+                    var result = document.querySelector (selector);
+                    if (result == null) {
+                        throw Error (`Bad selector ${selector}`);
                     }
+                    queryCache [selector] = result;
+                    return result;
+                }
+            };
+
+            function log (message) {
+                console.log (message);
+                var element = document.createElement ("p");
+                element.innerText = `${new Date ().toTimeString ()}: ${message}`;
+                document.body.appendChild (element);
+            }
+
+            function logEvent (event) {
+                log (`${event.type} (${JSON.stringify (event)})`);
+            }
+
+            var socket;
+            window.addEventListener ("load", event => {
+                $ ("#connect").addEventListener ("click", event => {
+                    socket = new WebSocket ("wss://" + window.location.host);
+                    socket.addEventListener ("message", logEvent);
+                    socket.addEventListener ("open", event => {
+                        logEvent (event);
+                        $ ("#status").innerText = "Status: open";
+                    });
+                    socket.addEventListener ("close", event => {
+                        logEvent (event);
+                        $ ("#status").innerText = "Status: closed";
+                    });
+                    socket.addEventListener ("message", event => {
+                        log (`Received message: ${event.data}`);
+                    });
+                    socket.addEventListener ("error", logEvent);
+                });
+                $ ("#send").addEventListener ("click", event => {
+                    if (socket === undefined) {
+                        log ("Socket doesn't exist");
+                        return;
+                    }
+                    if (socket.readyState !== WebSocket.OPEN) {
+                        log ("Can't send data to non-open WebSocket");
+                        return;
+                    }
+                    socket.send ("Hello world!");
+                    log ("Sent hello world message");
+                });
+                $ ("#disconnect").addEventListener ("click", event => {
+                    if (socket === undefined) {
+                        log ("Socket doesn't exist");
+                        return;
+                    }
+                    if (socket.readyState !== WebSocket.OPEN) {
+                        log ("Can't close non-open WebSocket");
+                    }
+                    socket.close ();
                 });
             });
         </script>
     </head>
     <body>
         <p>This is a test text document to be read by HTStack::Response::sendTo!</p>
-        <button>Test WebSocket</button>
+        <p>Test WebSocket:</p>
+        <button id = "connect">Connect</button>
+        <button id = "send">Send</button>
+        <button id = "disconnect">Disconnect</button>
+        <p id = "status">Status: <p>
     </body>
 </html>

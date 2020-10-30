@@ -12,7 +12,6 @@ namespace HTStack::WebSockets {
         cleanup_ ();
     };
     void ClientThread::run_ (WebSocket* const & webSocket) {
-        std::cout << "message receive loop should go here" << std::endl;
         while (true) {
             try {
                 DataFrame dataFrame = webSocket->recv_ ();

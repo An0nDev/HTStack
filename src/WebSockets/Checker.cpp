@@ -57,12 +57,12 @@ namespace HTStack::WebSockets {
         if (!request.headers.contains ("Sec-WebSocket-Key")) { BAD(); }
         std::string clientKey (request.headers ["Sec-WebSocket-Key"]);
         std::string derivedKey (deriveKey (clientKey));
-        std::cout << derivedKey << std::endl;
         Response response (101);
         response.headers ["Upgrade"] = "websocket";
         response.headers ["Connection"] = "Upgrade";
         response.headers ["Sec-WebSocket-Accept"] = derivedKey;
         response.respondTo (request);
+        std::cout << "sent successful websocket response!" << std::endl;
         return new WebSocket (request.clientSocket);
     };
 };
