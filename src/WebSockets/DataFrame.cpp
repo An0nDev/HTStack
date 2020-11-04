@@ -2,6 +2,9 @@
 #include <stdexcept>
 
 namespace HTStack::WebSockets {
+    bool DataFrame::isControl () {
+        return opCode >= 0x8;
+    };
     DataFrame::DataFrame (
         std::array <bool, 3> const & rsv_,
         DataFrame::OpCode const & opCode_,

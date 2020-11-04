@@ -30,6 +30,10 @@
             var socket;
             window.addEventListener ("load", event => {
                 $ ("#connect").addEventListener ("click", event => {
+                    if (socket !== undefined) {
+                        log ("Socket already exists/is connected");
+                        return;
+                    }
                     socket = new WebSocket ("wss://" + window.location.host);
                     socket.addEventListener ("message", logEvent);
                     socket.addEventListener ("open", event => {
@@ -39,6 +43,7 @@
                     socket.addEventListener ("close", event => {
                         logEvent (event);
                         $ ("#status").innerText = "Status: closed";
+                        socket = undefined;
                     });
                     socket.addEventListener ("message", event => {
                         log (`Received message: ${event.data}`);

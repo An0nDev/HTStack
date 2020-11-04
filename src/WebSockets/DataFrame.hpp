@@ -21,6 +21,7 @@ namespace HTStack::WebSockets {
             PING = 0x9,
             PONG = 0xA
         } opCode;
+        bool isControl ();
 
         // Request will be ignored if not masked,
         // so no need for a field here

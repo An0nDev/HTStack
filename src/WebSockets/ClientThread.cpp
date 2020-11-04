@@ -12,10 +12,25 @@ namespace HTStack::WebSockets {
         cleanup_ ();
     };
     void ClientThread::run_ (WebSocket* const & webSocket) {
+        DataFrame::Data::Type messageType;
+        std::vector <DataFrame> fragments;
         while (true) {
             try {
+                fetchData_ ();
                 DataFrame dataFrame = webSocket->recv_ ();
-                // Handle data frame
+                if (dataFrame.isControl ()) {
+                    handleControlFrame_ (dataFrame);
+                } else {
+                    if (!dataFrame.fin) {
+                        // The current data frame is not the last fragment
+                        if (fragments.size () == 0) {
+                            // Since this is the first fragment, interpret its opcode as the message type
+                            messageType = dataFrame.
+                        }
+                    } else {
+                        // The current data frame is the last fragment
+                    }
+                }
             } catch (std::exception const & exception) {
                 std::cout << "Caught exception when receiving from WebSocket: " << exception.what () << std::endl;
                 webSocket->close ();
@@ -25,6 +40,12 @@ namespace HTStack::WebSockets {
             }
         }
         delete webSocket;
+    };
+    void ClientThread::fetchData_ () {
+
+    };
+    void ClientThread::handleControlFrame_ () {
+
     };
     void ClientThread::cleanup_ () {
         {

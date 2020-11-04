@@ -11,6 +11,7 @@ namespace HTStack::WebSockets {
         unsigned char firstByte = reader.read (1) [0];
         std::cout << "read first byte: " << +firstByte << std::endl;
         bool fin  = firstByte & 0b10000000;
+        std::cout << "fin is " << fin << std::endl;
         bool rsv1 = firstByte & 0b01000000;
         bool rsv2 = firstByte & 0b00100000;
         bool rsv3 = firstByte & 0b00010000;
@@ -44,6 +45,11 @@ namespace HTStack::WebSockets {
             payloadData.push_back (maskedPayloadByte ^ maskingKey [maskedPayloadByteIndex % 4]);
             maskedPayloadByteIndex += 1;
         };
+        std::cout << "data: ";
+        for (unsigned char payloadByte : payloadData) {
+            std::cout << payloadByte;
+        };
+        std::cout << std::endl;
         std::cout << "returning DataFrame from readFrom" << std::endl;
         return DataFrame (rsv, opCode, payloadData); // ~InternalReader called
     };
